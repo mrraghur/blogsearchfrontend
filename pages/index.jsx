@@ -2,7 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { useState } from "react";
 
-import NavBar from "../components/nav";
+import Nav from "../components/nav";
 import Filters from "../components/Filters";
 import Actions from "../components/Actions";
 
@@ -24,7 +24,7 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <NavBar />
+        <Nav />
         <div className={styles.content}>
           <Filters />
           <div className={styles.blogs}>
@@ -42,7 +42,12 @@ export default function Home() {
                 <></>
               ) : (
                 <div className={styles.big_logo}>
-                  <Image src="/logo_blue.png" width="150" height="150" />
+                  <Image
+                    src="/logo_blue.png"
+                    width="150"
+                    height="150"
+                    alt="logo"
+                  />
                 </div>
               )}
             </div>
@@ -53,7 +58,7 @@ export default function Home() {
 
       <footer className={styles.footer}>
         <div className={styles.logo}>
-          <Image src="/logo_white.png" width="28" height="28" />
+          <Image src="/logo_white.png" width="28" height="28" alt="logo" />
           <p>BlogSearch</p>
         </div>
         <div className={styles.links}>

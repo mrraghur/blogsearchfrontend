@@ -3,11 +3,11 @@ import Image from "next/image";
 
 import styles from "../styles/components/Nav.module.css";
 
-const NavBar = () => {
+const Nav = () => {
   return (
     <div className={styles.container}>
       <div className={styles.logo}>
-        <Image src="/logo_white.png" width="28" height="28" />
+        <Image src="/logo_white.png" width="28" height="28" alt="logo" />
         <p>BlogSearch</p>
       </div>
       <div className={styles.nav}>
@@ -26,4 +26,4 @@ const NavBar = () => {
   );
 };
 
-export default NavBar;
+export default Nav;
