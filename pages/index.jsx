@@ -8,6 +8,7 @@ import Actions from "../components/Actions";
 
 import { FiSearch } from "react-icons/fi";
 import { GrClose } from "react-icons/gr";
+import { AiFillLinkedin, AiOutlineTwitter } from "react-icons/ai";
 
 import styles from "../styles/Home.module.css";
 
@@ -49,6 +50,41 @@ export default function Home() {
           <Actions />
         </div>
       </main>
+
+      <footer className={styles.footer}>
+        <div className={styles.logo}>
+          <Image src="/logo_white.png" width="28" height="28" />
+          <p>BlogSearch</p>
+        </div>
+        <div className={styles.links}>
+          <div className={styles.resources}>
+            <p className={styles.title}>Resources</p>
+            <ul>
+              <li>Home</li>
+              <li>Directory</li>
+              <li>Blog Rankings</li>
+              <li>Best Posts</li>
+              <li>Submit Blog</li>
+              <li>API</li>
+              <li>Data</li>
+              <li>About</li>
+            </ul>
+          </div>
+          <div className={styles.socials}>
+            <p className={styles.title}>Follow us</p>
+            <ul>
+              <li>
+                <AiFillLinkedin className={styles.icon} />
+                <p>LInkedIn</p>
+              </li>
+              <li>
+                <AiOutlineTwitter className={styles.icon} />
+                <p>Twitter</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
