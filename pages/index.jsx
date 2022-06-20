@@ -1,6 +1,6 @@
 import Head from "next/head";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Nav from "../components/Nav";
 import Filters from "../components/Filters";
@@ -18,13 +18,27 @@ export default function Home() {
   const [showFilters, setShowFilters] = useState(false);
   const [showActions, setShowActions] = useState(false);
 
+  useEffect(() => {
+    const width = window.innerWidth;
+
+    if (width > 992) {
+      setShowFilters(true);
+      setShowActions(true);
+    } else if (width < 991 && width > 600) {
+      setShowFilters(false);
+      setShowActions(true);
+    } else {
+      setShowFilters(false);
+      setShowActions(false);
+    }
+  });
+
   const handleShowFilters = () => {
-    console.log("hii");
-    setShowFilters(!showFilters);
+    // setShowFilters(!showFilters);
   };
 
   const handleShowActions = () => {
-    setShowActions(!showActions);
+    // setShowActions(!showActions);
   };
 
   return (
