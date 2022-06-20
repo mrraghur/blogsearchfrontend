@@ -1,7 +1,6 @@
 .container {
   width: 100%;
   height: auto;
-  display: flex;
   grid-area: filters;
   background: var(--white);
   border-radius: 5px;

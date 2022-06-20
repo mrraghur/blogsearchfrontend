@@ -8,12 +8,24 @@ import Actions from "../components/Actions";
 
 import { FiSearch } from "react-icons/fi";
 import { GrClose } from "react-icons/gr";
+import { GoSettings } from "react-icons/go";
 import { AiFillLinkedin, AiOutlineTwitter } from "react-icons/ai";
 
 import styles from "../styles/Home.module.css";
 
 export default function Home() {
   const [results, setResults] = useState([]);
+  const [showFilters, setShowFilters] = useState(false);
+  const [showActions, setShowActions] = useState(false);
+
+  const handleShowFilters = () => {
+    console.log("hii");
+    setShowFilters(!showFilters);
+  };
+
+  const handleShowActions = () => {
+    setShowActions(!showActions);
+  };
 
   return (
     <div className={styles.container}>
@@ -25,17 +37,63 @@ export default function Home() {
 
       <main className={styles.main}>
         <Nav />
-        <div className={styles.content}>
-          <Filters />
+        <div
+          className={styles.content}
+          style={
+            showFilters
+              ? {}
+              : showActions
+              ? {
+                  gridTemplateColumns: "0fr 2.5fr 1fr",
+                  gridTemplateAreas: "content content actions",
+                }
+              : {
+                  gridTemplateColumns: "0fr 3fr 0fr",
+                  gridTemplateAreas: "content content content",
+                  padding: 0,
+                  gridGap: 0,
+                }
+          }
+        >
+          <Filters
+            showFilters={showFilters}
+            handleShowFilters={handleShowFilters}
+          />
           <div className={styles.blogs}>
-            <div className={styles.search}>
-              <FiSearch className={styles.icon} />
-              <input
-                type="text"
-                placeholder="Search here..."
-                className={styles.search_input}
-              />
-              <GrClose className={styles.icon} />
+            <div className={styles.top}>
+              <div
+                className={styles.filters}
+                style={{ width: showActions ? "8%" : "15%" }}
+              >
+                <GoSettings
+                  className={styles.icon}
+                  // style={{ margin: showActions ? "0 5px" : "0 2px" }}
+                />
+              </div>
+              <div
+                className={styles.search}
+                style={{
+                  width: showActions ? "100%" : "70%",
+                  padding: showActions ? "0 10px" : "0 5px",
+                }}
+              >
+                <FiSearch
+                  className={styles.icon}
+                  // style={{ margin: showActions ? "0 5px" : "0 2px" }}
+                />
+                <input
+                  type="text"
+                  placeholder="Search here..."
+                  className={styles.search_input}
+                />
+                <GrClose className={styles.icon} />
+              </div>
+              <div
+                className={styles.actions}
+                style={{ width: showActions ? "8%" : "15%" }}
+              >
+                <p className={styles.icon}>A</p>
+              </div>
             </div>
             <div className={styles.results}>
               {results.length > 0 ? (
@@ -52,7 +110,10 @@ export default function Home() {
               )}
             </div>
           </div>
-          <Actions />
+          <Actions
+            showActions={showActions}
+            handleShowActions={handleShowActions}
+          />
         </div>
       </main>
 

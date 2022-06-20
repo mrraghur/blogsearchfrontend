@@ -6,9 +6,12 @@ import { BsShareFill } from "react-icons/bs";
 import styles from "../styles/components/Actions.module.css";
 import Ad from "./Ad";
 
-const Actions = () => {
+const Actions = ({ showActions }) => {
   return (
-    <div className={styles.container}>
+    <div
+      className={styles.container}
+      style={{ display: showActions ? "flex" : "none" }}
+    >
       <div className={styles.actions}>
         <p className={styles.title}>Actions</p>
         <button className={styles.button}>

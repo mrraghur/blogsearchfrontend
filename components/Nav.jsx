@@ -1,6 +1,8 @@
 import React from "react";
 import Image from "next/image";
 
+import { FaBars } from "react-icons/fa";
+
 import styles from "../styles/components/Nav.module.css";
 
 const Nav = () => {
@@ -21,6 +23,20 @@ const Nav = () => {
           <li>Data</li>
           <li>About</li>
         </ul>
+      </div>
+      <div className={styles.tablet_nav}>
+        <ul>
+          <li>Home</li>
+          <li>Directory</li>
+        </ul>
+        <div className={styles.bars}>
+          <FaBars className={styles.icon} />
+        </div>
+      </div>
+      <div className={styles.phone_nav}>
+        <div className={styles.bars}>
+          <FaBars className={styles.icon} />
+        </div>
       </div>
     </div>
   );

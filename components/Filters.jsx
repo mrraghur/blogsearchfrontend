@@ -6,15 +6,18 @@ import { FiSearch } from "react-icons/fi";
 
 import styles from "../styles/components/Filters.module.css";
 
-const Filters = () => {
+const Filters = ({ showFilters, handleShowFilters }) => {
   return (
-    <div className={styles.container}>
+    <div
+      className={styles.container}
+      style={{ display: showFilters ? "flex" : "none" }}
+    >
       <div className={styles.header}>
         <div className={styles.header_name}>
           <GoSettings className={styles.icon} />
           <p>Filters</p>
         </div>
-        <div className={styles.header_collapse}>
+        <div className={styles.header_collapse} onClick={handleShowFilters}>
           <AiOutlineLeft className={styles.icon} />
         </div>
       </div>
