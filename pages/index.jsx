@@ -61,15 +61,19 @@ export default function Home() {
           />
           <div className={styles.blogs}>
             <div className={styles.top}>
-              <div
-                className={styles.filters}
-                style={{ width: showActions ? "8%" : "15%" }}
-              >
-                <GoSettings
-                  className={styles.icon}
-                  // style={{ margin: showActions ? "0 5px" : "0 2px" }}
-                />
-              </div>
+              {showFilters ? (
+                <></>
+              ) : (
+                <div
+                  className={styles.filters}
+                  style={{ width: showActions ? "8%" : "15%" }}
+                >
+                  <GoSettings
+                    className={styles.icon}
+                    // style={{ margin: showActions ? "0 5px" : "0 2px" }}
+                  />
+                </div>
+              )}
               <div
                 className={styles.search}
                 style={{
@@ -88,12 +92,16 @@ export default function Home() {
                 />
                 <GrClose className={styles.icon} />
               </div>
-              <div
-                className={styles.actions}
-                style={{ width: showActions ? "8%" : "15%" }}
-              >
-                <p className={styles.icon}>A</p>
-              </div>
+              {showActions ? (
+                <></>
+              ) : (
+                <div
+                  className={styles.actions}
+                  style={{ width: showActions ? "8%" : "15%" }}
+                >
+                  <p className={styles.icon}>A</p>
+                </div>
+              )}
             </div>
             <div className={styles.results}>
               {results.length > 0 ? (
