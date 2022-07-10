@@ -18,7 +18,7 @@
 
 .content {
   width: 100%;
-  height: calc(100vh - 60px);
+  height: 1000px;
   display: grid;
   grid-template-columns: 1fr 3fr 1fr;
   grid-template-rows: 1fr;
@@ -102,11 +102,38 @@
 
 .results {
   width: 100%;
-  height: 90%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+}
+
+.results .div {
+  width: 100%;
+  height: 99%;
+  border-radius: 5px;
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.results .div .header {
+  width: 95%;
+  height: 60px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.results .div .header select {
+  padding: 5px 15px;
+  background: var(--grayish);
+  border: none;
+  border-radius: 3px;
 }
 
 .footer {
