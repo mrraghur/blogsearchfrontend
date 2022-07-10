@@ -12,11 +12,138 @@ import { GoSettings } from "react-icons/go";
 import { AiFillLinkedin, AiOutlineTwitter } from "react-icons/ai";
 
 import styles from "../styles/Home.module.css";
+import Blogs from "../components/Blogs";
+import Pagination from "../components/Pagination";
 
 export default function Home() {
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState([
+    {
+      image:
+        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80",
+      link: "https://noahpinion.substack.com/p/hispanics-or-coups",
+      title: "Hispanics or coups - by Noah Smith - Noahpinion",
+      description:
+        "Hardly news - for years the GOP has been trying to tilt the scale away from majoritarianism through gerrymandering, Electoral College gaming, and command of the Senate.... ",
+      category: "substack",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80",
+      link: "https://noahpinion.substack.com/p/hispanics-or-coups",
+      title: "Hispanics or coups - by Noah Smith - Noahpinion",
+      description:
+        "Hardly news - for years the GOP has been trying to tilt the scale away from majoritarianism through gerrymandering, Electoral College gaming, and command of the Senate.... ",
+      category: "substack",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80",
+      link: "https://noahpinion.substack.com/p/hispanics-or-coups",
+      title: "Hispanics or coups - by Noah Smith - Noahpinion",
+      description:
+        "Hardly news - for years the GOP has been trying to tilt the scale away from majoritarianism through gerrymandering, Electoral College gaming, and command of the Senate.... ",
+      category: "substack",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80",
+      link: "https://noahpinion.substack.com/p/hispanics-or-coups",
+      title: "Hispanics or coups - by Noah Smith - Noahpinion",
+      description:
+        "Hardly news - for years the GOP has been trying to tilt the scale away from majoritarianism through gerrymandering, Electoral College gaming, and command of the Senate.... ",
+      category: "substack",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80",
+      link: "https://noahpinion.substack.com/p/hispanics-or-coups",
+      title: "Hispanics or coups - by Noah Smith - Noahpinion",
+      description:
+        "Hardly news - for years the GOP has been trying to tilt the scale away from majoritarianism through gerrymandering, Electoral College gaming, and command of the Senate.... ",
+      category: "substack",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80",
+      link: "https://noahpinion.substack.com/p/hispanics-or-coups",
+      title: "Hispanics or coups - by Noah Smith - Noahpinion",
+      description:
+        "Hardly news - for years the GOP has been trying to tilt the scale away from majoritarianism through gerrymandering, Electoral College gaming, and command of the Senate.... ",
+      category: "substack",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80",
+      link: "https://noahpinion.substack.com/p/hispanics-or-coups",
+      title: "Hispanics or coups - by Noah Smith - Noahpinion",
+      description:
+        "Hardly news - for years the GOP has been trying to tilt the scale away from majoritarianism through gerrymandering, Electoral College gaming, and command of the Senate.... ",
+      category: "substack",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80",
+      link: "https://noahpinion.substack.com/p/hispanics-or-coups",
+      title: "Hispanics or coups - by Noah Smith - Noahpinion",
+      description:
+        "Hardly news - for years the GOP has been trying to tilt the scale away from majoritarianism through gerrymandering, Electoral College gaming, and command of the Senate.... ",
+      category: "substack",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80",
+      link: "https://noahpinion.substack.com/p/hispanics-or-coups",
+      title: "Hispanics or coups - by Noah Smith - Noahpinion",
+      description:
+        "Hardly news - for years the GOP has been trying to tilt the scale away from majoritarianism through gerrymandering, Electoral College gaming, and command of the Senate.... ",
+      category: "substack",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80",
+      link: "https://noahpinion.substack.com/p/hispanics-or-coups",
+      title: "Hispanics or coups - by Noah Smith - Noahpinion",
+      description:
+        "Hardly news - for years the GOP has been trying to tilt the scale away from majoritarianism through gerrymandering, Electoral College gaming, and command of the Senate.... ",
+      category: "substack",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80",
+      link: "https://noahpinion.substack.com/p/hispanics-or-coups",
+      title: "Hispanics or coups - by Noah Smith - Noahpinion",
+      description:
+        "Hardly news - for years the GOP has been trying to tilt the scale away from majoritarianism through gerrymandering, Electoral College gaming, and command of the Senate.... ",
+      category: "substack",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80",
+      link: "https://noahpinion.substack.com/p/hispanics-or-coups",
+      title: "Hispanics or coups - by Noah Smith - Noahpinion",
+      description:
+        "Hardly news - for years the GOP has been trying to tilt the scale away from majoritarianism through gerrymandering, Electoral College gaming, and command of the Senate.... ",
+      category: "substack",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=764&q=80",
+      link: "https://noahpinion.substack.com/p/hispanics-or-coups",
+      title: "Hispanics or coups - by Noah Smith - Noahpinion",
+      description:
+        "Hardly news - for years the GOP has been trying to tilt the scale away from majoritarianism through gerrymandering, Electoral College gaming, and command of the Senate.... ",
+      category: "substack",
+    },
+  ]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [blogsPerPage, setblogsPerPage] = useState(7);
+
   const [showFilters, setShowFilters] = useState(false);
   const [showActions, setShowActions] = useState(false);
+
+  const indexOfLastBlog = currentPage * blogsPerPage;
+  const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
+  const currentBlogs = results?.slice(indexOfFirstBlog, indexOfLastBlog);
 
   useEffect(() => {
     const width = window.innerWidth;
@@ -39,6 +166,10 @@ export default function Home() {
 
   const handleShowActions = () => {
     // setShowActions(!showActions);
+  };
+
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   return (
@@ -119,7 +250,22 @@ export default function Home() {
             </div>
             <div className={styles.results}>
               {results.length > 0 ? (
-                <></>
+                <div className={styles.div}>
+                  <div className={styles.header}>
+                    <p>{results?.length} Results</p>
+                    <select name="sort">
+                      <option value="Relevance">Relevance</option>
+                      <option value="Category">Category</option>
+                    </select>
+                  </div>
+                  <Blogs blogs={currentBlogs} />
+                  <Pagination
+                    blogsPerPage={blogsPerPage}
+                    totalBlogs={results.length}
+                    currentPage={currentPage}
+                    paginate={paginate}
+                  />
+                </div>
               ) : (
                 <div className={styles.big_logo}>
                   <Image
