@@ -90,6 +90,10 @@
     overflow: hidden;
   }
 
+  .phone_blog .top .left img {
+    width: 150%;
+  }
+
   .phone_blog .top .right {
     width: calc(98% - 100px);
     height: calc(100% - 30px);
