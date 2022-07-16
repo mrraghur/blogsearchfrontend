@@ -16,6 +16,12 @@
   overflow: hidden;
 }
 
+.container .image img {
+  width: 150%;
+  object-fit: cover;
+  object-position: center center;
+}
+
 .container .category {
   padding: 5px 10px;
   background: #c4c4c4;
@@ -54,4 +60,17 @@
   display: flex;
   align-items: center;
   text-decoration: underline;
+}
+
+@media screen and (max-width: 599px) {
+  .container {
+    height: 180px;
+  }
+
+  .container .image {
+    width: 200px;
+    height: 70px;
+    border-radius: 7px;
+    overflow: hidden;
+  }
 }
