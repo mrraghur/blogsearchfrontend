@@ -149,18 +149,19 @@ export default function Home() {
   useEffect(() => {
     const width = window.innerWidth;
     setWidth(width);
+    console.log(width);
 
     if (width > 992) {
       setShowFilters(true);
       setShowActions(true);
-    } else if (width < 991 && width > 600) {
+    } else if (width < 992 && width > 600) {
       setShowFilters(false);
       setShowActions(true);
     } else {
       setShowFilters(false);
       setShowActions(false);
     }
-  });
+  }, [width]);
 
   const handleShowFilters = () => {
     // setShowFilters(!showFilters);

@@ -63,14 +63,66 @@
 }
 
 @media screen and (max-width: 599px) {
-  .container {
+  .phone_blog {
+    width: 98%;
     height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-top: 1.5px solid #c4c4c4;
   }
 
-  .container .image {
-    width: 200px;
-    height: 70px;
+  .phone_blog .top {
+    width: 100%;
+    height: 100px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .phone_blog .top .left {
+    width: 100px;
+    height: 80px;
+    margin: 0 5px 0 0;
     border-radius: 7px;
     overflow: hidden;
+  }
+
+  .phone_blog .top .right {
+    width: calc(98% - 100px);
+    height: calc(100% - 30px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .phone_blog .top .right .link {
+    width: auto;
+    height: 20px;
+    display: flex;
+    align-items: center;
+  }
+
+  .phone_blog .top .right .link .icon {
+    margin: 0 5px 0 0;
+  }
+
+  .category_fam {
+    padding: 5px 10px;
+    background: #c4c4c4;
+    border-radius: 4px;
+  }
+
+  .title {
+    font-weight: 700;
+    color: var(--title);
+    width: auto;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    text-decoration: underline;
   }
 }
