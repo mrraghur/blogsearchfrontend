@@ -137,6 +137,7 @@ export default function Home() {
   ]);
   const [currentPage, setCurrentPage] = useState(1);
   const [blogsPerPage, setblogsPerPage] = useState(7);
+  const [width, setWidth] = useState(0);
 
   const [showFilters, setShowFilters] = useState(false);
   const [showActions, setShowActions] = useState(false);
@@ -147,6 +148,7 @@ export default function Home() {
 
   useEffect(() => {
     const width = window.innerWidth;
+    setWidth(width);
 
     if (width > 992) {
       setShowFilters(true);
@@ -258,7 +260,7 @@ export default function Home() {
                       <option value="Category">Category</option>
                     </select>
                   </div>
-                  <Blogs blogs={currentBlogs} />
+                  <Blogs blogs={currentBlogs} width={width} />
                   <Pagination
                     blogsPerPage={blogsPerPage}
                     totalBlogs={results.length}
