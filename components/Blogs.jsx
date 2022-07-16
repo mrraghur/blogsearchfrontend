@@ -4,11 +4,11 @@ import Blog from "./Blog";
 
 import styles from "../styles/components/Blogs.module.css";
 
-const Blogs = ({ blogs }) => {
+const Blogs = ({ blogs, width }) => {
   return (
     <div className={styles.blogs}>
       {blogs.map((blog, index) => (
-        <Blog blog={blog} key={index} />
+        <Blog blog={blog} key={index} width={width} />
       ))}
     </div>
   );
