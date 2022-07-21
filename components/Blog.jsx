@@ -1,4 +1,5 @@
 import React from "react";
+import parse from "html-react-parser";
 
 import { BiLinkExternal } from "react-icons/bi";
 
@@ -15,13 +16,13 @@ const Blog = ({ blog, width }) => {
           <div className={styles.content}>
             <p className={styles.link}>
               <BiLinkExternal className={styles.icon} />
-              {blog?.document?.url.substr(0, 45)}...
+              {blog?.document?.url.substr(0, 60)}...
             </p>
             <p className={styles.title}>
-              {blog?.document?.title.substr(0, 45)}
+              {blog?.document?.title.substr(0, 65)}
             </p>
             <div className={styles.description}>
-              {blog?.highlights[0]?.snippet}...
+              {parse(blog?.highlights[0]?.snippet)}...
             </div>
           </div>
           <div className={styles.category}>{blog?.document?.category}</div>

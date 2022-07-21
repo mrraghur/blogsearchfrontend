@@ -1,12 +1,12 @@
 import Head from "next/head";
 import Image from "next/image";
+import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 
 import Nav from "../components/Nav";
 import Filters from "../components/Filters";
 import Actions from "../components/Actions";
 
-import axios from "axios";
 import { FiSearch } from "react-icons/fi";
 import { GrClose } from "react-icons/gr";
 import { GoSettings } from "react-icons/go";
@@ -21,7 +21,7 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [blogsPerPage, setblogsPerPage] = useState(7);
   const [width, setWidth] = useState(0);
-  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [showFilters, setShowFilters] = useState(false);
   const [showActions, setShowActions] = useState(false);
@@ -29,6 +29,8 @@ export default function Home() {
   const indexOfLastBlog = currentPage * blogsPerPage;
   const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
   const currentBlogs = results?.slice(indexOfFirstBlog, indexOfLastBlog);
+
+  const { register, handleSubmit } = useForm();
 
   useEffect(() => {
     const width = window.innerWidth;
@@ -59,12 +61,14 @@ export default function Home() {
     setCurrentPage(pageNumber);
   };
 
-  const handleSearch = async (e) => {
-    setSearch(e.target.value);
+  const handleSearch = async (data) => {
+    setResults([]);
+    setLoading(true);
 
-    await fetch(`/api/${e.target.value}`)
+    await fetch(`/api/${data?.key}`)
       .then((res) => res.json())
       .then((data) => {
+        setLoading(false);
         setResults(data?.blogs?.results[0]?.hits);
       });
   };
@@ -127,13 +131,19 @@ export default function Home() {
                   className={styles.icon}
                   // style={{ margin: showActions ? "0 5px" : "0 2px" }}
                 />
-                <input
-                  type="text"
-                  placeholder="Search here..."
-                  className={styles.search_input}
-                  value={search}
-                  onChange={handleSearch}
-                />
+                <form
+                  action="#"
+                  className={styles.form}
+                  onSubmit={handleSubmit(handleSearch)}
+                >
+                  <input
+                    type="text"
+                    placeholder="Search here..."
+                    className={styles.search_input}
+                    {...register("key")}
+                  />
+                  <button type="submit">Search</button>
+                </form>
                 <GrClose className={styles.icon} />
               </div>
               {showActions ? (
@@ -167,12 +177,21 @@ export default function Home() {
                 </div>
               ) : (
                 <div className={styles.big_logo}>
-                  <Image
-                    src="/logo_blue.png"
-                    width="150"
-                    height="150"
-                    alt="logo"
-                  />
+                  {loading ? (
+                    <Image
+                      src="/loader.svg"
+                      width="150"
+                      height="150"
+                      alt="loading..."
+                    />
+                  ) : (
+                    <Image
+                      src="/logo_blue.png"
+                      width="150"
+                      height="150"
+                      alt="logo"
+                    />
+                  )}
                 </div>
               )}
             </div>
