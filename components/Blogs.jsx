@@ -5,6 +5,8 @@ import Blog from "./Blog";
 import styles from "../styles/components/Blogs.module.css";
 
 const Blogs = ({ blogs, width }) => {
+  console.log(blogs);
+
   return (
     <div className={styles.blogs}>
       {blogs.map((blog, index) => (
