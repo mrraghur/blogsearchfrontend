@@ -127,10 +127,14 @@ export default function Home() {
                   padding: showActions ? "0 10px" : "0 5px",
                 }}
               >
-                <FiSearch
-                  className={styles.icon}
-                  // style={{ margin: showActions ? "0 5px" : "0 2px" }}
-                />
+                {showActions ? (
+                  <FiSearch
+                    className={styles.icon}
+                    // style={{ margin: showActions ? "0 5px" : "0 2px" }}
+                  />
+                ) : (
+                  ""
+                )}
                 <form
                   action="#"
                   className={styles.form}
@@ -142,7 +146,13 @@ export default function Home() {
                     className={styles.search_input}
                     {...register("key")}
                   />
-                  <button type="submit">Search</button>
+                  <button type="submit">
+                    {showActions ? (
+                      "Search"
+                    ) : (
+                      <FiSearch className={styles.icon} />
+                    )}
+                  </button>
                 </form>
                 <GrClose className={styles.icon} />
               </div>
