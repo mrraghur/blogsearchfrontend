@@ -258,6 +258,10 @@ p.title {
     flex-direction: column;
   }
 
+  .results {
+    margin-top: 7px;
+  }
+
   .links {
     width: 100%;
     justify-content: flex-start;

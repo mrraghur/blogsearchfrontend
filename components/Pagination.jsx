@@ -4,7 +4,13 @@ import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 
 import styles from "../styles/components/Pagination.module.css";
 
-const Pagination = ({ blogsPerPage, totalBlogs, paginate, currentPage }) => {
+const Pagination = ({
+  blogsPerPage,
+  totalBlogs,
+  paginate,
+  currentPage,
+  width,
+}) => {
   const pageNumbers = [];
 
   for (let i = 1; i <= Math.ceil(totalBlogs / blogsPerPage); i++) {
@@ -12,7 +18,10 @@ const Pagination = ({ blogsPerPage, totalBlogs, paginate, currentPage }) => {
   }
 
   return (
-    <div className={styles.container}>
+    <div
+      className={styles.container}
+      style={width > 600 ? {} : { margin: "10px 0" }}
+    >
       <AiOutlineLeft className={styles.icon} />
       <ul>
         {pageNumbers.map((number) => (

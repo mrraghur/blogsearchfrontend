@@ -28,11 +28,11 @@ const Blog = ({ blog, width }) => {
           <div className={styles.category}>{blog?.document?.category}</div>
         </div>
       ) : (
-        <div className={styles.phone_blog?.document}>
+        <div className={styles.phone_blog}>
           <div className={styles.top}>
             <div className={styles.left}>
               <img
-                src={blog?.document?.image}
+                src={blog?.document?.imgs}
                 alt="blog?.document"
                 loading="lazy"
               />

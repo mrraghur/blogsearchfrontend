@@ -167,7 +167,10 @@ export default function Home() {
                 </div>
               )}
             </div>
-            <div className={styles.results}>
+            <div
+              className={styles.results}
+              style={width > 600 ? { height: "950px" } : { height: "1200px" }}
+            >
               {results.length > 0 ? (
                 <div className={styles.div}>
                   <div className={styles.header}>
@@ -183,6 +186,7 @@ export default function Home() {
                     totalBlogs={results.length}
                     currentPage={currentPage}
                     paginate={paginate}
+                    width={width}
                   />
                 </div>
               ) : (
