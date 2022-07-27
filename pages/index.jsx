@@ -32,7 +32,7 @@ export default function Home() {
   const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
   const currentBlogs = results?.slice(indexOfFirstBlog, indexOfLastBlog);
 
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, reset } = useForm();
 
   useEffect(() => {
     const width = window.innerWidth;
@@ -214,7 +214,10 @@ export default function Home() {
                     )}
                   </button>
                 </form>
-                <GrClose className={styles.icon} />
+                <GrClose
+                  className={styles.icon}
+                  onClick={() => reset({ key: "" })}
+                />
               </div>
               {width > 600 ? (
                 <></>
