@@ -16,7 +16,9 @@ const Blog = ({ blog, width }) => {
           <div className={styles.content}>
             <p className={styles.link}>
               <BiLinkExternal className={styles.icon} />
-              {blog?.document?.url.substr(0, 60)}...
+              {width > 922
+                ? `${blog?.document?.url?.substr(0, 60)}...`
+                : `${blog?.document?.url.substr(0, 50)}...`}
             </p>
             <p className={styles.title}>
               {blog?.document?.title.substr(0, 65)}
@@ -31,11 +33,7 @@ const Blog = ({ blog, width }) => {
         <div className={styles.phone_blog}>
           <div className={styles.top}>
             <div className={styles.left}>
-              <img
-                src={blog?.document?.imgs}
-                alt="blog?.document"
-                loading="lazy"
-              />
+              <img src={blog?.document?.imgs} alt="blog" loading="lazy" />
             </div>
             <div className={styles.right}>
               <p className={styles.link}>
@@ -51,7 +49,7 @@ const Blog = ({ blog, width }) => {
             </div>
           </div>
           <div className={styles.description}>
-            {blog?.highlights[0]?.snippet?.substr(0, 150)}...
+            {parse(blog?.highlights[0]?.snippet?.substr(0, 150))}...
           </div>
         </div>
       )}

@@ -20,9 +20,9 @@
   height: 100%;
   display: grid;
   grid-template-columns: 1fr 3fr 1fr;
-  grid-template-rows: 1fr;
+  /* grid-template-rows: 1fr; */
   grid-template-areas: "filters content actions";
-  padding: 10px;
+  /* padding: 10px; */
   grid-gap: 10px;
   margin-top: 5px;
 }
@@ -35,6 +35,7 @@
   align-items: center;
   justify-content: flex-start;
   grid-area: content;
+  /* position: relative; */
 }
 
 .icon {
@@ -107,6 +108,7 @@
   outline: none;
   font-size: 1em;
   padding: 0 5px;
+  /* background: transparent; */
 }
 
 .form button {
@@ -129,6 +131,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+  margin-top: 7px;
 }
 
 .results .div {
@@ -258,8 +261,8 @@ p.title {
     flex-direction: column;
   }
 
-  .results {
-    margin-top: 7px;
+  .form {
+    border-left: none;
   }
 
   .links {

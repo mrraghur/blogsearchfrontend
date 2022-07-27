@@ -5,7 +5,7 @@ import { FaBars } from "react-icons/fa";
 
 import styles from "../styles/components/Nav.module.css";
 
-const Nav = () => {
+const Nav = ({ handleShowSideNav }) => {
   return (
     <div className={styles.container}>
       <div className={styles.logo}>
@@ -29,12 +29,12 @@ const Nav = () => {
           <li>Home</li>
           <li>Directory</li>
         </ul>
-        <div className={styles.bars}>
+        <div className={styles.bars} onClick={handleShowSideNav}>
           <FaBars className={styles.icon} />
         </div>
       </div>
       <div className={styles.phone_nav}>
-        <div className={styles.bars}>
+        <div className={styles.bars} onClick={handleShowSideNav}>
           <FaBars className={styles.icon} />
         </div>
       </div>

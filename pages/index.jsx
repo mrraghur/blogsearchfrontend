@@ -15,6 +15,7 @@ import { AiFillLinkedin, AiOutlineTwitter } from "react-icons/ai";
 import styles from "../styles/Home.module.css";
 import Blogs from "../components/Blogs";
 import Pagination from "../components/Pagination";
+import SideNav from "../components/SideNav";
 
 export default function Home() {
   const [results, setResults] = useState([]);
@@ -25,6 +26,7 @@ export default function Home() {
 
   const [showFilters, setShowFilters] = useState(false);
   const [showActions, setShowActions] = useState(false);
+  const [showSideNav, setShowSideNav] = useState(false);
 
   const indexOfLastBlog = currentPage * blogsPerPage;
   const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
@@ -50,11 +52,15 @@ export default function Home() {
   }, [width]);
 
   const handleShowFilters = () => {
-    // setShowFilters(!showFilters);
+    setShowFilters(!showFilters);
   };
 
   const handleShowActions = () => {
-    // setShowActions(!showActions);
+    setShowActions(!showActions);
+  };
+
+  const handleShowSideNav = () => {
+    setShowSideNav(!showSideNav);
   };
 
   const paginate = (pageNumber) => {
@@ -82,17 +88,45 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <Nav />
+        <Nav handleShowSideNav={handleShowSideNav} />
+        {showSideNav ? (
+          <SideNav handleShowSideNav={handleShowSideNav} width={width} />
+        ) : (
+          <></>
+        )}
         <div
           className={styles.content}
           style={
             showFilters
-              ? {}
+              ? width < 992
+                ? width < 600
+                  ? {
+                      gridTemplateColumns: "0fr 5fr 0fr",
+                      gridTemplateAreas: "content content actions",
+                      gridGap: 0,
+                      padding: 0,
+                    }
+                  : {
+                      gridTemplateColumns: "0fr 3fr 1fr",
+                      gridTemplateAreas: "content content actions",
+                      gridGap: 10,
+                      padding: 0,
+                    }
+                : {}
               : showActions
-              ? {
-                  gridTemplateColumns: "0fr 2.5fr 1fr",
-                  gridTemplateAreas: "content content actions",
-                }
+              ? width > 600
+                ? {
+                    gridTemplateColumns: "0fr 3fr 1fr",
+                    gridTemplateAreas: "content content actions",
+                    gridGap: 10,
+                    padding: 0,
+                  }
+                : {
+                    gridTemplateColumns: "0fr 3fr 0fr",
+                    gridTemplateAreas: "content content content",
+                    padding: 0,
+                    gridGap: 0,
+                  }
               : {
                   gridTemplateColumns: "0fr 3fr 0fr",
                   gridTemplateAreas: "content content content",
@@ -104,15 +138,34 @@ export default function Home() {
           <Filters
             showFilters={showFilters}
             handleShowFilters={handleShowFilters}
+            width={width}
           />
           <div className={styles.blogs}>
             <div className={styles.top}>
               {showFilters ? (
-                <></>
+                width > 992 ? (
+                  <></>
+                ) : (
+                  <div
+                    className={styles.filters}
+                    style={{
+                      width: showActions ? "15%" : "15%",
+                      background: "#4158d0",
+                      color: "white",
+                    }}
+                    onClick={handleShowFilters}
+                  >
+                    <GoSettings
+                      className={styles.icon}
+                      // style={{ margin: showActions ? "0 5px" : "0 2px" }}
+                    />
+                  </div>
+                )
               ) : (
                 <div
                   className={styles.filters}
-                  style={{ width: showActions ? "8%" : "15%" }}
+                  style={{ width: showActions ? "15%" : "15%" }}
+                  onClick={handleShowFilters}
                 >
                   <GoSettings
                     className={styles.icon}
@@ -122,12 +175,18 @@ export default function Home() {
               )}
               <div
                 className={styles.search}
-                style={{
-                  width: showActions ? "100%" : "70%",
-                  padding: showActions ? "0 10px" : "0 5px",
-                }}
+                // style={
+                //   showFilters
+                //     ? width < 600
+                //       ? { width: "70%" }
+                //       : {}
+                //     : {
+                //         width: showActions ? "70%" : "70%",
+                //         padding: showActions ? "0" : "0 5px",
+                //       }
+                // }
               >
-                {showActions ? (
+                {width > 600 ? (
                   <FiSearch
                     className={styles.icon}
                     // style={{ margin: showActions ? "0 5px" : "0 2px" }}
@@ -144,10 +203,11 @@ export default function Home() {
                     type="text"
                     placeholder="Search here..."
                     className={styles.search_input}
+                    required
                     {...register("key")}
                   />
                   <button type="submit">
-                    {showActions ? (
+                    {width > 600 ? (
                       "Search"
                     ) : (
                       <FiSearch className={styles.icon} />
@@ -156,12 +216,18 @@ export default function Home() {
                 </form>
                 <GrClose className={styles.icon} />
               </div>
-              {showActions ? (
+              {width > 600 ? (
                 <></>
               ) : (
                 <div
                   className={styles.actions}
-                  style={{ width: showActions ? "8%" : "15%" }}
+                  // style={{ width: showActions ? "8%" : "15%" }}
+                  style={
+                    showActions
+                      ? { width: "15%", background: "#4158d0", color: "white" }
+                      : { width: "15%" }
+                  }
+                  onClick={handleShowActions}
                 >
                   <p className={styles.icon}>A</p>
                 </div>
@@ -213,6 +279,7 @@ export default function Home() {
           <Actions
             showActions={showActions}
             handleShowActions={handleShowActions}
+            width={width}
           />
         </div>
       </main>
