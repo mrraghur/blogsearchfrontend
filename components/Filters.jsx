@@ -6,7 +6,15 @@ import { FiSearch } from "react-icons/fi";
 
 import styles from "../styles/components/Filters.module.css";
 
-const Filters = ({ showFilters, handleShowFilters, width, face_counts }) => {
+const Filters = ({
+  showFilters,
+  handleShowFilters,
+  width,
+  face_counts,
+  handleFiltering,
+}) => {
+  console.log(face_counts);
+
   return (
     <div
       className={styles.container}
@@ -47,15 +55,20 @@ const Filters = ({ showFilters, handleShowFilters, width, face_counts }) => {
           <input type="text" placeholder="Search categories" />
         </div>
         <div className={styles.list}>
-          <div className={styles.list_item}>
-            <div className={styles.item_left}>
-              <input type="checkbox" />
-              <p>Subtrack</p>
+          {face_counts[0]?.counts?.map((face_count, index) => (
+            <div className={styles.list_item} key={index}>
+              <div className={styles.item_left}>
+                <input
+                  type="checkbox"
+                  onChange={(e) => handleFiltering(e, face_count?.value)}
+                />
+                <p>{face_count?.value}</p>
+              </div>
+              <div className={styles.item_right}>
+                <p>{face_count?.count}</p>
+              </div>
             </div>
-            <div className={styles.item_right}>
-              <p>0</p>
-            </div>
-          </div>
+          ))}
         </div>
         <button className={styles.button}>Show more</button>
       </div>
@@ -64,33 +77,20 @@ const Filters = ({ showFilters, handleShowFilters, width, face_counts }) => {
           <p>Audience</p>
         </div>
         <div className={styles.list}>
-          <div className={styles.list_item}>
-            <div className={styles.item_left}>
-              <input type="checkbox" />
-              <p>Expert</p>
+          {face_counts[1]?.counts?.map((face_count, index) => (
+            <div className={styles.list_item} key={index}>
+              <div className={styles.item_left}>
+                <input
+                  type="checkbox"
+                  onChange={(e) => handleFiltering(e, face_count?.value)}
+                />
+                <p>{face_count?.value}</p>
+              </div>
+              <div className={styles.item_right}>
+                <p>{face_count?.count}</p>
+              </div>
             </div>
-            <div className={styles.item_right}>
-              <p>{face_counts[1]?.counts[0]?.count}</p>
-            </div>
-          </div>
-          <div className={styles.list_item}>
-            <div className={styles.item_left}>
-              <input type="checkbox" />
-              <p>Intermediate</p>
-            </div>
-            <div className={styles.item_right}>
-              <p>{face_counts[1]?.counts[1]?.count}</p>
-            </div>
-          </div>
-          <div className={styles.list_item}>
-            <div className={styles.item_left}>
-              <input type="checkbox" />
-              <p>Beginner</p>
-            </div>
-            <div className={styles.item_right}>
-              <p>{face_counts[1]?.counts[2]?.count}</p>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
       <div className={styles.time}>

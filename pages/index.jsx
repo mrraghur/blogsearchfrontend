@@ -25,8 +25,14 @@ export default function Home() {
   const [width, setWidth] = useState(0);
   const [loading, setLoading] = useState(false);
   const [face_counts, setFaceCounts] = useState([
-    { counts: [] },
-    { counts: [{ count: 0 }, { count: 0 }, { count: 0 }] },
+    { counts: [{ count: "0", value: "subtrack" }] },
+    {
+      counts: [
+        { count: 0, value: "expert" },
+        { count: 0, value: "intermediate" },
+        { count: 0, value: "beginner" },
+      ],
+    },
     { counts: [] },
   ]);
 
@@ -97,6 +103,12 @@ export default function Home() {
     });
   };
 
+  const handleFiltering = (event, value) => {
+    console.log(results);
+    const filtered = results?.filter((one) => one.document.aud == value);
+    console.log("filtered", filtered);
+  };
+
   return (
     <div className={styles.container}>
       <Head>
@@ -158,6 +170,7 @@ export default function Home() {
             handleShowFilters={handleShowFilters}
             width={width}
             face_counts={face_counts}
+            handleFiltering={handleFiltering}
           />
           <div className={styles.blogs}>
             <div className={styles.top}>

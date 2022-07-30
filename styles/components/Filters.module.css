@@ -129,6 +129,7 @@
 
 .item_left p {
   margin: 0 5px;
+  text-transform: capitalize;
 }
 
 .button {
