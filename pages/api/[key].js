@@ -7,6 +7,7 @@ dotenv.config();
 
 const handler = async (req, res) => {
   const { key } = req.query;
+  const { page, per_page } = JSON.parse(req.body);
 
   const blogs = await axios.post(`${process.env.BACKEND_API}`, {
     searches: [
@@ -17,8 +18,8 @@ const handler = async (req, res) => {
         highlight_affix_num_tokens: 20,
         highlight_full_fields: "text,title,imgs,category",
         max_facet_values: 30,
-        page: 1,
-        per_page: 102,
+        page: page,
+        per_page: per_page,
         q: `${key}`,
         query_by: "text,title,imgs,category",
         sort_by: "",

@@ -11,7 +11,12 @@ const Blog = ({ blog, width }) => {
       {width > 600 ? (
         <div className={styles.container}>
           <div className={styles.image}>
-            <img src={blog?.document?.imgs} alt="blog" loading="lazy" />
+            <img
+              src={blog?.document?.imgs}
+              alt="blog"
+              loading="lazy"
+              placeholder="blur"
+            />
           </div>
           <div className={styles.content}>
             <p className={styles.link}>

@@ -1,41 +1,28 @@
 import React from "react";
-
-import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
+import Pagination from "@mui/material/Pagination";
+import Stack from "@mui/material/Stack";
 
 import styles from "../styles/components/Pagination.module.css";
 
-const Pagination = ({
-  blogsPerPage,
-  totalBlogs,
-  paginate,
-  currentPage,
-  width,
-}) => {
-  const pageNumbers = [];
+const PaginationC = ({ blogsPerPage, data, paginate }) => {
+  const [page, setPage] = React.useState(1);
+  const pageNumbers = Math.ceil(data?.found / blogsPerPage);
 
-  for (let i = 1; i <= Math.ceil(totalBlogs / blogsPerPage); i++) {
-    pageNumbers.push(i);
-  }
+  const handleChange = (event, value) => {
+    setPage(value);
+    paginate(value);
+  };
 
   return (
-    <div
-      className={styles.container}
-      style={width > 600 ? {} : { margin: "10px 0" }}
-    >
-      <AiOutlineLeft className={styles.icon} />
-      <ul>
-        {pageNumbers.map((number) => (
-          <li
-            key={number}
-            className={number == currentPage ? `${styles.active}` : ""}
-          >
-            <p onClick={() => paginate(number)}>{number}</p>
-          </li>
-        ))}
-      </ul>
-      <AiOutlineRight className={styles.icon} />
-    </div>
+    <Stack spacing={2} className={styles.container}>
+      <Pagination
+        count={pageNumbers}
+        color="secondary"
+        onChange={handleChange}
+        page={page}
+      />
+    </Stack>
   );
 };
 
-export default Pagination;
+export default PaginationC;

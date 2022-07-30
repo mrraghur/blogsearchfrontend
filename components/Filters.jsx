@@ -6,7 +6,7 @@ import { FiSearch } from "react-icons/fi";
 
 import styles from "../styles/components/Filters.module.css";
 
-const Filters = ({ showFilters, handleShowFilters, width }) => {
+const Filters = ({ showFilters, handleShowFilters, width, face_counts }) => {
   return (
     <div
       className={styles.container}
@@ -46,7 +46,7 @@ const Filters = ({ showFilters, handleShowFilters, width }) => {
           <FiSearch className={styles.icon} />
           <input type="text" placeholder="Search categories" />
         </div>
-        <div className={styles.categories_list}>
+        <div className={styles.list}>
           <div className={styles.list_item}>
             <div className={styles.item_left}>
               <input type="checkbox" />
@@ -70,7 +70,7 @@ const Filters = ({ showFilters, handleShowFilters, width }) => {
               <p>Expert</p>
             </div>
             <div className={styles.item_right}>
-              <p>0</p>
+              <p>{face_counts[1]?.counts[0]?.count}</p>
             </div>
           </div>
           <div className={styles.list_item}>
@@ -79,7 +79,7 @@ const Filters = ({ showFilters, handleShowFilters, width }) => {
               <p>Intermediate</p>
             </div>
             <div className={styles.item_right}>
-              <p>0</p>
+              <p>{face_counts[1]?.counts[1]?.count}</p>
             </div>
           </div>
           <div className={styles.list_item}>
@@ -88,7 +88,7 @@ const Filters = ({ showFilters, handleShowFilters, width }) => {
               <p>Beginner</p>
             </div>
             <div className={styles.item_right}>
-              <p>0</p>
+              <p>{face_counts[1]?.counts[2]?.count}</p>
             </div>
           </div>
         </div>

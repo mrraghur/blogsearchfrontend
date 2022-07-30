@@ -18,26 +18,27 @@ import Pagination from "../components/Pagination";
 import SideNav from "../components/SideNav";
 
 export default function Home() {
+  const [data, setData] = useState({});
+  const [keyword, setKeyword] = useState("");
   const [results, setResults] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const [blogsPerPage, setblogsPerPage] = useState(7);
   const [width, setWidth] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [face_counts, setFaceCounts] = useState([
+    { counts: [] },
+    { counts: [{ count: 0 }, { count: 0 }, { count: 0 }] },
+    { counts: [] },
+  ]);
 
   const [showFilters, setShowFilters] = useState(false);
   const [showActions, setShowActions] = useState(false);
   const [showSideNav, setShowSideNav] = useState(false);
-
-  const indexOfLastBlog = currentPage * blogsPerPage;
-  const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
-  const currentBlogs = results?.slice(indexOfFirstBlog, indexOfLastBlog);
 
   const { register, handleSubmit, reset } = useForm();
 
   useEffect(() => {
     const width = window.innerWidth;
     setWidth(width);
-    console.log(width);
 
     if (width > 992) {
       setShowFilters(true);
@@ -63,20 +64,37 @@ export default function Home() {
     setShowSideNav(!showSideNav);
   };
 
-  const paginate = (pageNumber) => {
-    setCurrentPage(pageNumber);
+  const paginate = async (page) => {
+    await getBlogs(page, keyword, blogsPerPage).then((data) => {
+      // setResults([]);
+      setResults(data?.blogs?.results[0]?.hits);
+    });
+  };
+
+  const getBlogs = async (page, key, per_page) => {
+    return new Promise(async (resolve, reject) => {
+      await fetch(`/api/${key}`, {
+        body: JSON.stringify({ page, per_page }),
+        method: "POST",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          resolve(data);
+        });
+    });
   };
 
   const handleSearch = async (data) => {
-    setResults([]);
     setLoading(true);
+    setResults([]);
+    setKeyword(data?.key);
 
-    await fetch(`/api/${data?.key}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setLoading(false);
-        setResults(data?.blogs?.results[0]?.hits);
-      });
+    await getBlogs(1, data?.key, blogsPerPage).then((data) => {
+      setLoading(false);
+      setResults(data?.blogs?.results[0]?.hits);
+      setData(data?.blogs?.results[0]);
+      setFaceCounts(data?.blogs?.results[0]?.facet_counts);
+    });
   };
 
   return (
@@ -139,6 +157,7 @@ export default function Home() {
             showFilters={showFilters}
             handleShowFilters={handleShowFilters}
             width={width}
+            face_counts={face_counts}
           />
           <div className={styles.blogs}>
             <div className={styles.top}>
@@ -240,22 +259,21 @@ export default function Home() {
               className={styles.results}
               style={width > 600 ? { height: "950px" } : { height: "1200px" }}
             >
-              {results.length > 0 ? (
+              {results?.length > 0 ? (
                 <div className={styles.div}>
                   <div className={styles.header}>
-                    <p>{results?.length} Results</p>
+                    <p>{data?.found} Results</p>
                     <select name="sort">
                       <option value="Relevance">Relevance</option>
                       <option value="Category">Category</option>
                     </select>
                   </div>
-                  <Blogs blogs={currentBlogs} width={width} />
+                  <Blogs blogs={results} width={width} />
                   <Pagination
                     blogsPerPage={blogsPerPage}
-                    totalBlogs={results.length}
-                    currentPage={currentPage}
                     paginate={paginate}
                     width={width}
+                    data={data}
                   />
                 </div>
               ) : (
