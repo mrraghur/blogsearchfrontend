@@ -24,6 +24,8 @@ export default function Home() {
   const [blogsPerPage, setblogsPerPage] = useState(7);
   const [width, setWidth] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [sort_by, setSort_by] = useState("");
+  const [filter_by, setFilter_by] = useState("");
   const [face_counts, setFaceCounts] = useState([
     { counts: [{ count: "0", value: "subtrack" }] },
     {
@@ -71,8 +73,11 @@ export default function Home() {
   };
 
   const paginate = async (page) => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
     await getBlogs(page, keyword, blogsPerPage).then((data) => {
-      // setResults([]);
       setResults(data?.blogs?.results[0]?.hits);
     });
   };
@@ -80,7 +85,12 @@ export default function Home() {
   const getBlogs = async (page, key, per_page) => {
     return new Promise(async (resolve, reject) => {
       await fetch(`/api/${key}`, {
-        body: JSON.stringify({ page, per_page }),
+        body: JSON.stringify({
+          page,
+          per_page,
+          sort_by: sort_by,
+          filter_by: filter_by,
+        }),
         method: "POST",
       })
         .then((res) => res.json())
@@ -103,10 +113,15 @@ export default function Home() {
     });
   };
 
-  const handleFiltering = (event, value) => {
-    console.log(results);
-    const filtered = results?.filter((one) => one.document.aud == value);
-    console.log("filtered", filtered);
+  const handleFiltering = async (event, value) => {
+    if (event.target.checked) {
+      const filtered = data?.hits?.filter(
+        (hit) => hit?.document.aud === `${value}`
+      );
+      setResults(filtered);
+    } else {
+      setResults(data?.hits);
+    }
   };
 
   return (
@@ -275,7 +290,10 @@ export default function Home() {
               {results?.length > 0 ? (
                 <div className={styles.div}>
                   <div className={styles.header}>
-                    <p>{data?.found} Results</p>
+                    <p>
+                      {filter_by.length > 0 ? results?.length : data?.found}
+                      Results
+                    </p>
                     <select name="sort">
                       <option value="Relevance">Relevance</option>
                       <option value="Category">Category</option>

@@ -13,8 +13,6 @@ const Filters = ({
   face_counts,
   handleFiltering,
 }) => {
-  console.log(face_counts);
-
   return (
     <div
       className={styles.container}
@@ -22,7 +20,6 @@ const Filters = ({
         showFilters
           ? width < 992
             ? {
-                // display: "flex",
                 position: "absolute",
                 width: "250px",
                 top: "110px",
