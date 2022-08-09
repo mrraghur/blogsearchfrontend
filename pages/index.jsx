@@ -18,14 +18,16 @@ import Pagination from "../components/Pagination";
 import SideNav from "../components/SideNav";
 
 export default function Home() {
-  const [data, setData] = useState({});
-  const [keyword, setKeyword] = useState("");
+  const [datas, setDatas] = useState({});
   const [results, setResults] = useState([]);
   const [blogsPerPage, setblogsPerPage] = useState(7);
+  const [page, setPage] = useState(1);
   const [width, setWidth] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [sort_by, setSort_by] = useState("");
   const [filter_by, setFilter_by] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+  const [showActions, setShowActions] = useState(false);
+  const [showSideNav, setShowSideNav] = useState(false);
   const [face_counts, setFaceCounts] = useState([
     { counts: [{ count: "0", value: "subtrack" }] },
     {
@@ -38,11 +40,11 @@ export default function Home() {
     { counts: [] },
   ]);
 
-  const [showFilters, setShowFilters] = useState(false);
-  const [showActions, setShowActions] = useState(false);
-  const [showSideNav, setShowSideNav] = useState(false);
-
   const { register, handleSubmit, reset } = useForm();
+
+  const indexOfLastPost = page * blogsPerPage;
+  const indexOfFirstPost = indexOfLastPost - blogsPerPage;
+  const currentPosts = results.slice(indexOfFirstPost, indexOfLastPost);
 
   useEffect(() => {
     const width = window.innerWidth;
@@ -77,51 +79,62 @@ export default function Home() {
       top: 0,
       behavior: "smooth",
     });
-    await getBlogs(page, keyword, blogsPerPage).then((data) => {
-      setResults(data?.blogs?.results[0]?.hits);
-    });
-  };
-
-  const getBlogs = async (page, key, per_page) => {
-    return new Promise(async (resolve, reject) => {
-      await fetch(`/api/${key}`, {
-        body: JSON.stringify({
-          page,
-          per_page,
-          sort_by: sort_by,
-          filter_by: filter_by,
-        }),
-        method: "POST",
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          resolve(data);
-        });
-    });
+    setPage(page);
   };
 
   const handleSearch = async (data) => {
     setLoading(true);
     setResults([]);
-    setKeyword(data?.key);
 
-    await getBlogs(1, data?.key, blogsPerPage).then((data) => {
-      setLoading(false);
-      setResults(data?.blogs?.results[0]?.hits);
-      setData(data?.blogs?.results[0]);
-      setFaceCounts(data?.blogs?.results[0]?.facet_counts);
-    });
+    await fetch(`/api/${data?.key}`, {
+      body: JSON.stringify(),
+      method: "POST",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setLoading(false);
+        setResults(data?.blogs?.results[0]?.hits);
+        setDatas(data?.blogs?.results[0]);
+        setFaceCounts(data?.blogs?.results[0]?.facet_counts);
+      });
   };
 
-  const handleFiltering = async (event, value) => {
+  const handleCategories = async (event, value) => {
     if (event.target.checked) {
-      const filtered = data?.hits?.filter(
-        (hit) => hit?.document.aud === `${value}`
-      );
+      const filtered = results.filter((result) => {
+        if (result?.document?.category === value) {
+          return true;
+        }
+      });
       setResults(filtered);
+      setPage(1);
     } else {
-      setResults(data?.hits);
+      setResults(datas?.hits);
     }
+  };
+
+  const handleAudiences = async (data) => {
+    if (data?.beginner || data?.intermediate || data?.expert) {
+      const filtered = results.filter((result) => {
+        if (
+          (data?.beginner && result?.document?.aud === "beginner") ||
+          (data?.intermediate && result?.document?.aud === "intermediate") ||
+          (data?.expert && result?.document?.aud === "expert")
+        ) {
+          return true;
+        }
+      });
+
+      setResults(filtered);
+      setPage(1);
+    } else {
+      setResults(datas?.hits);
+    }
+  };
+
+  const handleReset = () => {
+    setResults(datas?.hits);
+    setPage(1);
   };
 
   return (
@@ -185,7 +198,9 @@ export default function Home() {
             handleShowFilters={handleShowFilters}
             width={width}
             face_counts={face_counts}
-            handleFiltering={handleFiltering}
+            handleCategories={handleCategories}
+            handleAudiences={handleAudiences}
+            resetAll={handleReset}
           />
           <div className={styles.blogs}>
             <div className={styles.top}>
@@ -290,21 +305,18 @@ export default function Home() {
               {results?.length > 0 ? (
                 <div className={styles.div}>
                   <div className={styles.header}>
-                    <p>
-                      {filter_by.length > 0 ? results?.length : data?.found}
-                      Results
-                    </p>
+                    <p>{results?.length} Results</p>
                     <select name="sort">
                       <option value="Relevance">Relevance</option>
                       <option value="Category">Category</option>
                     </select>
                   </div>
-                  <Blogs blogs={results} width={width} />
+                  <Blogs blogs={currentPosts} width={width} />
                   <Pagination
                     blogsPerPage={blogsPerPage}
                     paginate={paginate}
                     width={width}
-                    data={data}
+                    data={results}
                   />
                 </div>
               ) : (

@@ -1,4 +1,5 @@
 import React from "react";
+import { useForm } from "react-hook-form";
 
 import { GoSettings } from "react-icons/go";
 import { AiOutlineLeft } from "react-icons/ai";
@@ -11,8 +12,22 @@ const Filters = ({
   handleShowFilters,
   width,
   face_counts,
-  handleFiltering,
+  handleCategories,
+  handleAudiences,
+  resetAll,
 }) => {
+  const { register, handleSubmit, reset } = useForm();
+
+  const handleReset = () => {
+    reset({
+      beginner: false,
+      intermediate: false,
+      expert: false,
+      category: false,
+    });
+    resetAll();
+  };
+
   return (
     <div
       className={styles.container}
@@ -57,7 +72,8 @@ const Filters = ({
               <div className={styles.item_left}>
                 <input
                   type="checkbox"
-                  onChange={(e) => handleFiltering(e, face_count?.value)}
+                  onChange={(e) => handleCategories(e, face_count?.value)}
+                  {...register("category")}
                 />
                 <p>{face_count?.value}</p>
               </div>
@@ -73,14 +89,11 @@ const Filters = ({
         <div className={styles.title}>
           <p>Audience</p>
         </div>
-        <div className={styles.list}>
+        <form className={styles.list} onSubmit={handleSubmit(handleAudiences)}>
           {face_counts[1]?.counts?.map((face_count, index) => (
             <div className={styles.list_item} key={index}>
               <div className={styles.item_left}>
-                <input
-                  type="checkbox"
-                  onChange={(e) => handleFiltering(e, face_count?.value)}
-                />
+                <input type="checkbox" {...register(`${face_count?.value}`)} />
                 <p>{face_count?.value}</p>
               </div>
               <div className={styles.item_right}>
@@ -88,14 +101,19 @@ const Filters = ({
               </div>
             </div>
           ))}
-        </div>
+          <button type="submit" className={styles.button}>
+            Filter
+          </button>
+        </form>
       </div>
       <div className={styles.time}>
         <div className={styles.title}>
           <p>Reading time (minutes)</p>
         </div>
         <div className={styles.choose}></div>
-        <button className={styles.button}>Clear filters</button>
+        <button className={styles.button} onClick={handleReset}>
+          Clear filters
+        </button>
       </div>
     </div>
   );

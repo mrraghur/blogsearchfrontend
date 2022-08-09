@@ -6,7 +6,7 @@ import styles from "../styles/components/Pagination.module.css";
 
 const PaginationC = ({ blogsPerPage, data, paginate }) => {
   const [page, setPage] = React.useState(1);
-  const pageNumbers = Math.ceil(data?.found / blogsPerPage);
+  const pageNumbers = Math.ceil(data?.length / blogsPerPage);
 
   const handleChange = (event, value) => {
     setPage(value);
