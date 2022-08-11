@@ -1,12 +1,21 @@
 import React from "react";
 import parse from "html-react-parser";
+import { useRouter } from "next/router";
 
 import { BiLinkExternal } from "react-icons/bi";
 
 import styles from "../styles/components/Blog.module.css";
 
 const Blog = ({ blog, width }) => {
-  const goToBlog = () => {};
+  const router = useRouter();
+
+  const goToBlog = () => {
+    router.push(
+      { pathname: `${blog?.document?.url}` },
+      blog?.document?.url,
+      {}
+    );
+  };
 
   return (
     <>
