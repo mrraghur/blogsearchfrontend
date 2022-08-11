@@ -6,10 +6,12 @@ import { BiLinkExternal } from "react-icons/bi";
 import styles from "../styles/components/Blog.module.css";
 
 const Blog = ({ blog, width }) => {
+  const goToBlog = () => {};
+
   return (
     <>
       {width > 600 ? (
-        <div className={styles.container}>
+        <div className={styles.container} onClick={goToBlog}>
           <div className={styles.image}>
             <img
               src={blog?.document?.imgs}

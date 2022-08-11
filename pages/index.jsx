@@ -2,6 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 import Nav from "../components/Nav";
 import Filters from "../components/Filters";
@@ -18,6 +19,7 @@ import Pagination from "../components/Pagination";
 import SideNav from "../components/SideNav";
 
 export default function Home() {
+  const router = useRouter();
   const [datas, setDatas] = useState({});
   const [results, setResults] = useState([]);
   const [blogsPerPage, setblogsPerPage] = useState(7);
@@ -62,6 +64,25 @@ export default function Home() {
     }
   }, [width]);
 
+  useEffect(() => {
+    if (router.asPath.split("=")[1]) {
+      setLoading(true);
+      setResults([]);
+
+      fetch(`/api/${router.asPath.split("=")[1]}`, {
+        body: JSON.stringify(),
+        method: "POST",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setLoading(false);
+          setResults(data?.blogs?.results[0]?.hits);
+          setDatas(data?.blogs?.results[0]);
+          setFaceCounts(data?.blogs?.results[0]?.facet_counts);
+        });
+    }
+  }, [router.asPath]);
+
   const handleShowFilters = () => {
     setShowFilters(!showFilters);
   };
@@ -83,6 +104,10 @@ export default function Home() {
   };
 
   const handleSearch = async (data) => {
+    router.push({ pathname: `/`, query: { key: `${data?.key}` } }, undefined, {
+      shallow: true,
+    });
+
     setLoading(true);
     setResults([]);
 
