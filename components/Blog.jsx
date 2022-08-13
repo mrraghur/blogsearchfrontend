@@ -40,7 +40,7 @@ const Blog = ({ blog, width }) => {
               {blog?.document?.title.substr(0, 65)}
             </p>
             <div className={styles.description}>
-              {parse(blog?.highlights[0]?.snippet)}...
+              {parse(blog?.highlights[0]?.snippet?.substr(0, 300))}...
             </div>
           </div>
           <div className={styles.category}>{blog?.document?.category}</div>
