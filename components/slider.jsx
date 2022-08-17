@@ -34,14 +34,14 @@ const Slider = ({ handleTime }) => {
   }, []);
 
   return (
-    <div class={styles.wrapper}>
-      <div class={styles.values}>
+    <div className={styles.wrapper}>
+      <div className={styles.values}>
         <span>Min: {one}</span>
         <span>Max: {two}</span>
       </div>
-      <div class={styles.container}>
+      <div className={styles.container}>
         <div
-          class={styles.slider_track}
+          className={styles.slider_track}
           style={{
             background: `linear-gradient(to right, var(--gray) ${percent1}% , var(--blue) ${percent1}% , var(--blue) ${percent2}%, var(--gray) ${percent2}%)`,
           }}
@@ -61,7 +61,7 @@ const Slider = ({ handleTime }) => {
           onChange={slideTwo}
         />
       </div>
-      <button type="submit" className={styles.button} onClick={onFilter}>
+      <button type="submit" classNameName={styles.button} onClick={onFilter}>
         Filter
       </button>
     </div>
