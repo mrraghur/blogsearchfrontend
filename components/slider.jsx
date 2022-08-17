@@ -61,7 +61,7 @@ const Slider = ({ handleTime }) => {
           onChange={slideTwo}
         />
       </div>
-      <button type="submit" classNameName={styles.button} onClick={onFilter}>
+      <button type="submit" className={styles.button} onClick={onFilter}>
         Filter
       </button>
     </div>

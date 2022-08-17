@@ -1,4 +1,5 @@
 import React from "react";
+import Script from "next/script";
 import { CacheProvider } from "@emotion/react";
 import { ThemeProvider } from "@mui/material/styles";
 
@@ -17,6 +18,19 @@ function MyApp({
   return (
     <CacheProvider value={emotionCache}>
       <ThemeProvider theme={theme}>
+        <Script
+          strategy="lazyOnload"
+          src={`https://www.googletagmanager.com/gtag/js?id=G-JS6LSDJLS0`}
+        />
+        <Script strategy="lazyOnload">
+          {`
+             window.dataLayer = window.dataLayer || [];
+             function gtag(){dataLayer.push(arguments);}
+             gtag('js', new Date());
+           
+             gtag('config', 'G-JS6LSDJLS0');
+             `}
+        </Script>
         <Component {...pageProps} />
       </ThemeProvider>
     </CacheProvider>
