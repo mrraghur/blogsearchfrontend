@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import queryString from "query-string";
 
 import Nav from "../components/Nav";
 import Filters from "../components/Filters";
@@ -67,7 +68,14 @@ export default function Home() {
     if (router.asPath.split("=")[1]) {
       setLoading(true);
       setResults([]);
-      reset({ key: router.asPath.split("=")[1] });
+      const str = encodeURI(router.asPath.split("=")[1]);
+      reset({
+        key: str
+          .replace(/[+]/g, " ")
+          .replace(/%/g, "")
+          .replace(/25/g, "")
+          .replace(/2B/g, ""),
+      });
 
       fetch(`/api/${router.asPath.split("=")[1]}`, {
         body: JSON.stringify(),
@@ -104,29 +112,35 @@ export default function Home() {
   };
 
   const handleSearch = async (data) => {
-    router.push({ pathname: `/`, query: { key: `${data?.key}` } }, undefined, {
-      shallow: true,
-    });
+    if (!loading) {
+      router.push(
+        { pathname: `/`, query: { key: `${data?.key}` } },
+        undefined,
+        {
+          shallow: true,
+        }
+      );
 
-    setLoading(true);
-    setResults([]);
+      setLoading(true);
+      setResults([]);
 
-    await fetch(`/api/${data?.key}`, {
-      body: JSON.stringify(),
-      method: "POST",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setLoading(false);
-        setResults(data?.blogs?.results[0]?.hits);
-        setDatas(data?.blogs?.results[0]);
-        setFaceCounts(data?.blogs?.results[0]?.facet_counts);
-      });
+      await fetch(`/api/${data?.key}`, {
+        body: JSON.stringify(),
+        method: "POST",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setLoading(false);
+          setResults(data?.blogs?.results[0]?.hits);
+          setDatas(data?.blogs?.results[0]);
+          setFaceCounts(data?.blogs?.results[0]?.facet_counts);
+        });
+    }
   };
 
   const handleCategories = async (event, value) => {
     if (event.target.checked) {
-      const filtered = results.filter((result) => {
+      const filtered = datas?.filter((result) => {
         if (result?.document?.category === value) {
           return true;
         }
@@ -155,6 +169,20 @@ export default function Home() {
     } else {
       setResults(datas?.hits);
     }
+  };
+
+  const handleTime = (data) => {
+    const filtered = datas?.hits?.filter((result) => {
+      if (
+        parseInt(data.min) <= parseInt(result?.document?.readingtime) &&
+        parseInt(result?.document?.readingtime) <= parseInt(data.max)
+      ) {
+        return true;
+      }
+    });
+
+    setResults(filtered);
+    setPage(1);
   };
 
   const handleReset = () => {
@@ -240,6 +268,7 @@ export default function Home() {
             handleCategories={handleCategories}
             handleAudiences={handleAudiences}
             resetAll={handleReset}
+            handleTime={handleTime}
           />
           <div className={styles.blogs}>
             <div className={styles.top}>
