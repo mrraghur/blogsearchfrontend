@@ -19,10 +19,11 @@ function MyApp({
     <CacheProvider value={emotionCache}>
       <ThemeProvider theme={theme}>
         <Script
+          id="one"
           strategy="lazyOnload"
           src={`https://www.googletagmanager.com/gtag/js?id=G-JS6LSDJLS0`}
         />
-        <Script strategy="lazyOnload">
+        <Script id="two" strategy="lazyOnload">
           {`
              window.dataLayer = window.dataLayer || [];
              function gtag(){dataLayer.push(arguments);}
