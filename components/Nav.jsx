@@ -5,10 +5,10 @@ import { FaBars } from "react-icons/fa";
 
 import styles from "../styles/components/Nav.module.css";
 
-const Nav = ({ handleShowSideNav }) => {
+const Nav = ({ handleShowSideNav, reset }) => {
   return (
     <div className={styles.container}>
-      <div className={styles.logo}>
+      <div className={styles.logo} onClick={() => reset()}>
         <Image src="/logo_white.png" width="28" height="28" alt="logo" />
         <p>BlogSearch</p>
       </div>

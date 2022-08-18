@@ -6,6 +6,7 @@ import { AiOutlineLeft } from "react-icons/ai";
 import { FiSearch } from "react-icons/fi";
 
 import styles from "../styles/components/Filters.module.css";
+import Slider from "./slider";
 
 const Filters = ({
   showFilters,
@@ -15,6 +16,7 @@ const Filters = ({
   handleCategories,
   handleAudiences,
   resetAll,
+  handleTime,
 }) => {
   const { register, handleSubmit, reset } = useForm();
 
@@ -110,7 +112,7 @@ const Filters = ({
         <div className={styles.title}>
           <p>Reading time (minutes)</p>
         </div>
-        <div className={styles.choose}></div>
+        <Slider handleTime={handleTime} />
         <button className={styles.button} onClick={handleReset}>
           Clear filters
         </button>

@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import queryString from "query-string";
 
 import Nav from "../components/Nav";
 import Filters from "../components/Filters";
@@ -22,11 +23,10 @@ export default function Home() {
   const router = useRouter();
   const [datas, setDatas] = useState({});
   const [results, setResults] = useState([]);
-  const [blogsPerPage, setblogsPerPage] = useState(7);
+  const [blogsPerPage, setblogsPerPage] = useState(10);
   const [page, setPage] = useState(1);
   const [width, setWidth] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [filter_by, setFilter_by] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [showActions, setShowActions] = useState(false);
   const [showSideNav, setShowSideNav] = useState(false);
@@ -46,7 +46,7 @@ export default function Home() {
 
   const indexOfLastPost = page * blogsPerPage;
   const indexOfFirstPost = indexOfLastPost - blogsPerPage;
-  const currentPosts = results.slice(indexOfFirstPost, indexOfLastPost);
+  const currentPosts = results?.slice(indexOfFirstPost, indexOfLastPost);
 
   useEffect(() => {
     const width = window.innerWidth;
@@ -68,6 +68,14 @@ export default function Home() {
     if (router.asPath.split("=")[1]) {
       setLoading(true);
       setResults([]);
+      const str = encodeURI(router.asPath.split("=")[1]);
+      reset({
+        key: str
+          .replace(/[+]/g, " ")
+          .replace(/%/g, "")
+          .replace(/25/g, "")
+          .replace(/2B/g, ""),
+      });
 
       fetch(`/api/${router.asPath.split("=")[1]}`, {
         body: JSON.stringify(),
@@ -104,29 +112,35 @@ export default function Home() {
   };
 
   const handleSearch = async (data) => {
-    router.push({ pathname: `/`, query: { key: `${data?.key}` } }, undefined, {
-      shallow: true,
-    });
+    if (!loading) {
+      router.push(
+        { pathname: `/`, query: { key: `${data?.key}` } },
+        undefined,
+        {
+          shallow: true,
+        }
+      );
 
-    setLoading(true);
-    setResults([]);
+      setLoading(true);
+      setResults([]);
 
-    await fetch(`/api/${data?.key}`, {
-      body: JSON.stringify(),
-      method: "POST",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setLoading(false);
-        setResults(data?.blogs?.results[0]?.hits);
-        setDatas(data?.blogs?.results[0]);
-        setFaceCounts(data?.blogs?.results[0]?.facet_counts);
-      });
+      await fetch(`/api/${data?.key}`, {
+        body: JSON.stringify(),
+        method: "POST",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setLoading(false);
+          setResults(data?.blogs?.results[0]?.hits);
+          setDatas(data?.blogs?.results[0]);
+          setFaceCounts(data?.blogs?.results[0]?.facet_counts);
+        });
+    }
   };
 
   const handleCategories = async (event, value) => {
     if (event.target.checked) {
-      const filtered = results.filter((result) => {
+      const filtered = datas?.filter((result) => {
         if (result?.document?.category === value) {
           return true;
         }
@@ -140,7 +154,7 @@ export default function Home() {
 
   const handleAudiences = async (data) => {
     if (data?.beginner || data?.intermediate || data?.expert) {
-      const filtered = results.filter((result) => {
+      const filtered = datas?.hits?.filter((result) => {
         if (
           (data?.beginner && result?.document?.aud === "beginner") ||
           (data?.intermediate && result?.document?.aud === "intermediate") ||
@@ -157,9 +171,37 @@ export default function Home() {
     }
   };
 
+  const handleTime = (data) => {
+    const filtered = datas?.hits?.filter((result) => {
+      if (
+        parseInt(data.min) <= parseInt(result?.document?.readingtime) &&
+        parseInt(result?.document?.readingtime) <= parseInt(data.max)
+      ) {
+        return true;
+      }
+    });
+
+    setResults(filtered);
+    setPage(1);
+  };
+
   const handleReset = () => {
     setResults(datas?.hits);
     setPage(1);
+  };
+
+  const goHome = () => {
+    setLoading(false);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+    setResults([]);
+    setDatas([]);
+    reset({ key: "" });
+    router.push({ pathname: `/`, query: {} }, undefined, {
+      shallow: true,
+    });
   };
 
   return (
@@ -171,7 +213,7 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <Nav handleShowSideNav={handleShowSideNav} />
+        <Nav handleShowSideNav={handleShowSideNav} reset={goHome} />
         {showSideNav ? (
           <SideNav handleShowSideNav={handleShowSideNav} width={width} />
         ) : (
@@ -226,6 +268,7 @@ export default function Home() {
             handleCategories={handleCategories}
             handleAudiences={handleAudiences}
             resetAll={handleReset}
+            handleTime={handleTime}
           />
           <div className={styles.blogs}>
             <div className={styles.top}>
@@ -325,7 +368,7 @@ export default function Home() {
             </div>
             <div
               className={styles.results}
-              style={width > 600 ? { height: "950px" } : { height: "1200px" }}
+              style={width > 600 ? { height: "100%" } : { height: "1500px" }}
             >
               {results?.length > 0 ? (
                 <div className={styles.div}>
@@ -374,7 +417,7 @@ export default function Home() {
       </main>
 
       <footer className={styles.footer}>
-        <div className={styles.logo}>
+        <div className={styles.logo} onClick={goHome}>
           <Image src="/logo_white.png" width="28" height="28" alt="logo" />
           <p>BlogSearch</p>
         </div>
