@@ -28,8 +28,7 @@ function MyApp({
              window.dataLayer = window.dataLayer || [];
              function gtag(){dataLayer.push(arguments);}
              gtag('js', new Date());
-           
-             gtag('config', '${process.env.GOOGLE_ANAL}');
+             gtag('config', '${process.env.GOOGLE_ANALYTICS_ID}');
              `}
         </Script>
         <Component {...pageProps} />
