@@ -20,7 +20,7 @@ function MyApp({
       <ThemeProvider theme={theme}>
         <Script
           strategy="lazyOnload"
-          src={`https://www.googletagmanager.com/gtag/js?id=G-JS6LSDJLS0`}
+          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.GOOGLE_ANALYTICS_ID}`}
         />
         <Script strategy="lazyOnload">
           {`
@@ -28,7 +28,7 @@ function MyApp({
              function gtag(){dataLayer.push(arguments);}
              gtag('js', new Date());
            
-             gtag('config', 'G-JS6LSDJLS0');
+             gtag('config', '${process.env.GOOGLE_ANALYTICS_ID}');
              `}
         </Script>
         <Component {...pageProps} />
