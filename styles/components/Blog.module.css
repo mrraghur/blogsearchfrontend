@@ -76,6 +76,7 @@
     align-items: center;
     justify-content: center;
     border-top: 1.5px solid #c4c4c4;
+    cursor: pointer;
   }
 
   .phone_blog .top {
