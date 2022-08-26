@@ -316,14 +316,7 @@ export default function Home() {
                 //       }
                 // }
               >
-                {width > 600 ? (
-                  <FiSearch
-                    className={styles.icon}
-                    // style={{ margin: showActions ? "0 5px" : "0 2px" }}
-                  />
-                ) : (
-                  ""
-                )}
+                {width > 600 ? <FiSearch className={styles.icon} /> : ""}
                 <form
                   action="#"
                   className={styles.form}
@@ -368,7 +361,7 @@ export default function Home() {
             </div>
             <div
               className={styles.results}
-              style={width > 600 ? { height: "100%" } : { height: "1500px" }}
+              style={width > 600 ? { height: "100%" } : { height: "1800px" }}
             >
               {results?.length > 0 ? (
                 <div className={styles.div}>
