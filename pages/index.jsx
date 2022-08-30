@@ -3,7 +3,6 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import queryString from "query-string";
 
 import Nav from "../components/Nav";
 import Filters from "../components/Filters";
@@ -83,6 +82,7 @@ export default function Home() {
       })
         .then((res) => res.json())
         .then((data) => {
+          console.log(data);
           setLoading(false);
           setResults(data?.blogs?.results[0]?.hits);
           setDatas(data?.blogs?.results[0]);
@@ -166,6 +166,44 @@ export default function Home() {
 
       setResults(filtered);
       setPage(1);
+    } else {
+      setResults(datas?.hits);
+    }
+  };
+
+  const handleCountries = async (data) => {
+    if (Object.values(data)?.includes(true)) {
+      for (const country in data) {
+        if (data[country]) {
+          const filtered = datas?.hits?.filter((result) => {
+            if (result?.document?.countries === country) {
+              return true;
+            }
+          });
+          setResults(filtered);
+          setPage(1);
+        }
+        break;
+      }
+    } else {
+      setResults(datas?.hits);
+    }
+  };
+
+  const handleNames = async (data) => {
+    if (Object.values(data)?.includes(true)) {
+      for (const name in data) {
+        if (data[name]) {
+          const filtered = datas?.hits?.filter((result) => {
+            if (result?.document?.names === name) {
+              return true;
+            }
+          });
+          setResults(filtered);
+          setPage(1);
+        }
+        break;
+      }
     } else {
       setResults(datas?.hits);
     }
@@ -269,6 +307,9 @@ export default function Home() {
             handleAudiences={handleAudiences}
             resetAll={handleReset}
             handleTime={handleTime}
+            datas={datas}
+            handleCountries={handleCountries}
+            handleNames={handleNames}
           />
           <div className={styles.blogs}>
             <div className={styles.top}>

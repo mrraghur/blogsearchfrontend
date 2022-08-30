@@ -132,6 +132,16 @@
   text-transform: capitalize;
 }
 
+.item_right {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  /* background: red; */
+}
+
 .button {
   background: var(--blue);
   border: none;

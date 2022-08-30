@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import _ from "lodash";
 
 import { GoSettings } from "react-icons/go";
 import { AiOutlineLeft } from "react-icons/ai";
@@ -12,13 +13,30 @@ const Filters = ({
   showFilters,
   handleShowFilters,
   width,
-  face_counts,
   handleCategories,
   handleAudiences,
   resetAll,
   handleTime,
+  datas,
+  handleCountries,
+  handleNames,
 }) => {
+  const [audiences, setAudiences] = React.useState([]);
+  const [categories, setCategories] = React.useState([]);
+  const [countries, setCountries] = React.useState([]);
+  const [names, setNames] = React.useState([]);
+
   const { register, handleSubmit, reset } = useForm();
+  const {
+    register: register1,
+    handleSubmit: handleSubmit1,
+    reset: reset1,
+  } = useForm();
+  const {
+    register: register2,
+    handleSubmit: handleSubmit2,
+    reset: reset2,
+  } = useForm();
 
   const handleReset = () => {
     reset({
@@ -29,6 +47,17 @@ const Filters = ({
     });
     resetAll();
   };
+
+  useEffect(() => {
+    setAudiences(_.countBy(datas?.hits?.map((data) => data.document?.aud)));
+    setCategories(
+      _.countBy(datas?.hits?.map((data) => data.document?.category))
+    );
+    setCountries(
+      _.countBy(datas?.hits?.map((data) => data.document?.countries))
+    );
+    setNames(_.countBy(datas?.hits?.map((data) => data.document?.names)));
+  }, [datas]);
 
   return (
     <div
@@ -69,18 +98,18 @@ const Filters = ({
           <input type="text" placeholder="Search categories" />
         </div>
         <div className={styles.list}>
-          {face_counts[0]?.counts?.map((face_count, index) => (
+          {Object.keys(categories).map((category, index) => (
             <div className={styles.list_item} key={index}>
               <div className={styles.item_left}>
                 <input
                   type="checkbox"
-                  onChange={(e) => handleCategories(e, face_count?.value)}
+                  onChange={(e) => handleCategories(e, category)}
                   {...register("category")}
                 />
-                <p>{face_count?.value}</p>
+                <p>{category}</p>
               </div>
               <div className={styles.item_right}>
-                <p>{face_count?.count}</p>
+                <p>{categories[category]}</p>
               </div>
             </div>
           ))}
@@ -92,14 +121,56 @@ const Filters = ({
           <p>Audience</p>
         </div>
         <form className={styles.list} onSubmit={handleSubmit(handleAudiences)}>
-          {face_counts[1]?.counts?.map((face_count, index) => (
+          {Object.keys(audiences).map((audience, index) => (
             <div className={styles.list_item} key={index}>
               <div className={styles.item_left}>
-                <input type="checkbox" {...register(`${face_count?.value}`)} />
-                <p>{face_count?.value}</p>
+                <input type="checkbox" {...register(`${audience}`)} />
+                <p>{audience}</p>
               </div>
               <div className={styles.item_right}>
-                <p>{face_count?.count}</p>
+                <p>{audiences[audience]}</p>
+              </div>
+            </div>
+          ))}
+          <button type="submit" className={styles.button}>
+            Filter
+          </button>
+        </form>
+      </div>
+      <div className={styles.audience}>
+        <div className={styles.title}>
+          <p>Countries</p>
+        </div>
+        <form className={styles.list} onSubmit={handleSubmit1(handleCountries)}>
+          {Object.keys(countries).map((country, index) => (
+            <div className={styles.list_item} key={index}>
+              <div className={styles.item_left}>
+                <input type="checkbox" {...register1(`${country}`)} />
+                <p>{country}</p>
+              </div>
+              <div className={styles.item_right}>
+                <p>{countries[country]}</p>
+              </div>
+            </div>
+          ))}
+          <button type="submit" className={styles.button}>
+            Filter
+          </button>
+        </form>
+      </div>
+      <div className={styles.audience}>
+        <div className={styles.title}>
+          <p>Names</p>
+        </div>
+        <form className={styles.list} onSubmit={handleSubmit2(handleNames)}>
+          {Object.keys(names).map((name, index) => (
+            <div className={styles.list_item} key={index}>
+              <div className={styles.item_left}>
+                <input type="checkbox" {...register2(`${name}`)} />
+                <p>{name}</p>
+              </div>
+              <div className={styles.item_right}>
+                <p>{names[name]}</p>
               </div>
             </div>
           ))}
