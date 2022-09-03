@@ -173,18 +173,20 @@ export default function Home() {
 
   const handleCountries = async (data) => {
     if (Object.values(data)?.includes(true)) {
-      for (const country in data) {
-        if (data[country]) {
-          const filtered = datas?.hits?.filter((result) => {
-            if (result?.document?.countries === country) {
+      let filtered = [];
+      Object.entries(data).forEach(([key, value]) => {
+        if (value) {
+          const one = datas?.hits?.filter((result) => {
+            if (result?.document?.countries === key) {
               return true;
             }
           });
-          setResults(filtered);
-          setPage(1);
+          filtered = [...filtered, ...one];
+          // console.log(one);
         }
-        break;
-      }
+      });
+      setResults(filtered);
+      setPage(1);
     } else {
       setResults(datas?.hits);
     }
@@ -192,18 +194,20 @@ export default function Home() {
 
   const handleNames = async (data) => {
     if (Object.values(data)?.includes(true)) {
-      for (const name in data) {
-        if (data[name]) {
-          const filtered = datas?.hits?.filter((result) => {
-            if (result?.document?.names === name) {
+      let filtered = [];
+      Object.entries(data).forEach(([key, value]) => {
+        if (value) {
+          const one = datas?.hits?.filter((result) => {
+            if (result?.document?.names === key) {
               return true;
             }
           });
-          setResults(filtered);
-          setPage(1);
+          filtered = [...filtered, ...one];
+          // console.log(one);
         }
-        break;
-      }
+      });
+      setResults(filtered);
+      setPage(1);
     } else {
       setResults(datas?.hits);
     }
