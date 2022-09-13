@@ -1,0 +1,42 @@
+.container {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--white);
+  padding: 10px 0;
+}
+
+.container .top {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  margin: 0 0 10px 0;
+}
+
+.container .top select {
+  padding: 5px 15px;
+  background: var(--grayish);
+  border: none;
+  border-radius: 3px;
+}
+
+.container .blogs {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media screen and (max-width: 600px) {
+  .container .top {
+    padding: 0 10px;
+  }
+}
