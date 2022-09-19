@@ -21,6 +21,7 @@ function MyApp({
       <ThemeProvider theme={theme}>
         <Head>
           <title>Blog-Search</title>
+          <link rel="icon" href="/logo_white.png" type="image/png" />
         </Head>
         <Script
           id="one"
