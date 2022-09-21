@@ -14,6 +14,8 @@ import Actions from "../components/actions/actions";
 
 import styles from "../styles/Home.module.css";
 import Blogs from "../components/blogs/blogs";
+import APortal from "../components/portals/actions/actions";
+import FPortal from "../components/portals/filters/filters";
 
 function Home(props) {
   const router = useRouter();
@@ -119,6 +121,7 @@ function Home(props) {
       router.push(`/?${params.toString()}`);
 
       setBlogs(datas?.hits);
+      setFilters(false);
     }
   };
 
@@ -147,6 +150,7 @@ function Home(props) {
       router.push(`/?${params.toString()}`);
 
       setBlogs(filtered);
+      setFilters(false);
     } else {
       //remove category from url
       const params = new URLSearchParams(router.query);
@@ -154,6 +158,7 @@ function Home(props) {
       router.push(`/?${params.toString()}`);
 
       setBlogs(datas?.hits);
+      setFilters(false);
     }
   };
 
@@ -185,6 +190,7 @@ function Home(props) {
       router.push(`/?${params.toString()}`);
 
       setBlogs(filtered);
+      setFilters(false);
     } else {
       //remove country from url
       const params = new URLSearchParams(router.query);
@@ -192,6 +198,7 @@ function Home(props) {
       router.push(`/?${params.toString()}`);
 
       setBlogs(datas?.hits);
+      setFilters(false);
     }
   };
 
@@ -223,6 +230,7 @@ function Home(props) {
       router.push(`/?${params.toString()}`);
 
       setBlogs(filtered);
+      setFilters(false);
     } else {
       //remove name from url
       const params = new URLSearchParams(router.query);
@@ -230,6 +238,7 @@ function Home(props) {
       router.push(`/?${params.toString()}`);
 
       setBlogs(datas?.hits);
+      setFilters(false);
     }
   };
 
@@ -248,6 +257,7 @@ function Home(props) {
     });
 
     setBlogs(filtered);
+    setFilters(false);
   };
 
   const handleReset = () => {
@@ -280,8 +290,28 @@ function Home(props) {
     });
   };
 
+  const handleActions = () => {
+    setActions(!actions);
+  };
+
+  const handleFilters = () => {
+    setFilters(!filters);
+  };
+
   return (
     <div className={styles.body}>
+      {actions ? <APortal /> : null}
+      {filters ? (
+        <FPortal
+          datas={datas}
+          handleCategories={handleCategories}
+          handleAudiences={handleAudiences}
+          handleCountries={handleCountries}
+          handleNames={handleNames}
+          handleTime={handleTime}
+          resetAll={handleReset}
+        />
+      ) : null}
       <div className={styles.main}>
         <Nav reset={goHome} />
         <div className={styles.container}>
@@ -296,7 +326,15 @@ function Home(props) {
           />
           <div className={styles.content}>
             <div className={styles.top}>
-              <div className={styles.filters}>
+              <div
+                className={styles.filters}
+                onClick={handleFilters}
+                style={
+                  filters
+                    ? { background: "var(--blue)", color: "var(--white)" }
+                    : {}
+                }
+              >
                 <GoSettings />
               </div>
               <div className={styles.white}>
@@ -322,7 +360,15 @@ function Home(props) {
                   onClick={() => reset({ key: "" })}
                 />
               </div>
-              <div className={styles.actions}>
+              <div
+                className={styles.actions}
+                onClick={handleActions}
+                style={
+                  actions
+                    ? { background: "var(--blue)", color: "var(--white)" }
+                    : {}
+                }
+              >
                 <p>A</p>
               </div>
             </div>
@@ -350,7 +396,7 @@ function Home(props) {
               )}
             </div>
           </div>
-          <Actions show={actions} />
+          <Actions />
         </div>
       </div>
       <Footer goHome={goHome} />
