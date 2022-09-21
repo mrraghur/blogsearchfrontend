@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
 import Image from "next/image";
-import { useRouter, withRouter } from "next/router";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { ExportToCsv } from "export-to-csv";
+import { useRouter, withRouter } from "next/router";
 
 import { FiSearch } from "react-icons/fi";
 import { GrClose } from "react-icons/gr";
@@ -298,9 +299,31 @@ function Home(props) {
     setFilters(!filters);
   };
 
+  const handleExport = () => {
+    const options = {
+      fieldSeparator: ",",
+      quoteStrings: '"',
+      decimalSeparator: ".",
+      showLabels: true,
+      showTitle: true,
+      title: "Search results",
+      useTextFile: false,
+      useBom: true,
+      useKeysAsHeaders: true,
+    };
+
+    const csvExporter = new ExportToCsv(options);
+
+    const data = blogs.reduce((arr, blog) => {
+      return [...arr, blog.document];
+    }, []);
+
+    csvExporter.generateCsv(data);
+  };
+
   return (
     <div className={styles.body}>
-      {actions ? <APortal /> : null}
+      {actions ? <APortal exportToCsv={handleExport} /> : null}
       {filters ? (
         <FPortal
           datas={datas}
@@ -396,7 +419,7 @@ function Home(props) {
               )}
             </div>
           </div>
-          <Actions />
+          <Actions exportToCsv={handleExport} />
         </div>
       </div>
       <Footer goHome={goHome} />

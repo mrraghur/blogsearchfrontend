@@ -6,18 +6,18 @@ import { TbDatabaseExport } from "react-icons/tb";
 import Ad from "../ad/ad";
 import styles from "./actions.module.css";
 
-const Actions = () => {
+const Actions = ({ exportToCsv }) => {
   return (
     <div className={styles.container}>
       <div className={styles.actions}>
         <p className={styles.title}>Actions</p>
-        <button className={styles.button}>
+        <button className={styles.button} onClick={exportToCsv}>
           <TbDatabaseExport className={styles.icon} />
           <p>Export results to CSV</p>
         </button>
         <button className={styles.button}>
           <BsShareFill className={styles.icon} />
-          <p>Export results to CSV</p>
+          <p>Share results</p>
         </button>
       </div>
       <Ad>Ads</Ad>
