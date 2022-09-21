@@ -4,7 +4,7 @@ import Paginate from "../paginate/paginate";
 
 import styles from "./blogs.module.css";
 
-const Blogs = ({ blogs, time }) => {
+const Blogs = ({ blogs, time, remove }) => {
   const [blogsPerPage, setBlogsPerPage] = React.useState(10);
   const [page, setPage] = React.useState(1);
 
@@ -36,7 +36,7 @@ const Blogs = ({ blogs, time }) => {
       </div>
       <div className={styles.blogs}>
         {currentPosts?.map((blog, index) => (
-          <Blog blog={blog} key={index} />
+          <Blog blog={blog} key={index} remove={remove} />
         ))}
       </div>
       <Paginate

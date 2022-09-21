@@ -18,14 +18,14 @@ import Blogs from "../components/blogs/blogs";
 import APortal from "../components/portals/actions/actions";
 import FPortal from "../components/portals/filters/filters";
 
-function Home(props) {
+function Home() {
   const router = useRouter();
 
   const [loading, setLoading] = React.useState(false);
   const [blogs, setBlogs] = React.useState([]);
   const [datas, setDatas] = React.useState([]);
-  const [filters, setFilters] = React.useState(true);
-  const [actions, setActions] = React.useState(true);
+  const [filters, setFilters] = React.useState(false);
+  const [actions, setActions] = React.useState(false);
 
   const { register, handleSubmit, reset } = useForm();
 
@@ -75,7 +75,48 @@ function Home(props) {
           });
         }
 
-        console.log(anotherStr);
+        const filter = anotherStr.split("=")[0];
+
+        switch (filter) {
+          case "category":
+            const one = datas?.hits?.filter((result) => {
+              if (result?.document?.category === anotherStr.split("=")[1]) {
+                return true;
+              }
+            });
+            setBlogs(one);
+            break;
+
+          case "audience":
+            const two = datas?.hits?.filter((result) => {
+              if (result?.document?.aud === anotherStr.split("=")[1]) {
+                return true;
+              }
+            });
+            setBlogs(two);
+            break;
+
+          case "country":
+            const three = datas?.hits?.filter((result) => {
+              if (result?.document?.countries === anotherStr.split("=")[1]) {
+                return true;
+              }
+            });
+            setBlogs(three);
+            break;
+
+          case "name":
+            const four = datas?.hits?.filter((result) => {
+              if (result?.document?.names === anotherStr.split("=")[1]) {
+                return true;
+              }
+            });
+            setBlogs(four);
+            break;
+
+          default:
+            break;
+        }
       } else {
         const keyStr = router.asPath.split("?")[1];
         if (keyStr.split("=")[0] == "key") {
@@ -91,7 +132,7 @@ function Home(props) {
         }
       }
     }
-  }, []);
+  }, [router.asPath]);
 
   //filters
   const handleCategories = async (event, value) => {
@@ -321,6 +362,10 @@ function Home(props) {
     csvExporter.generateCsv(data);
   };
 
+  const handleDelete = (id) => {
+    setBlogs(blogs.filter((blog) => blog?.document?.id !== id));
+  };
+
   return (
     <div className={styles.body}>
       {actions ? <APortal exportToCsv={handleExport} /> : null}
@@ -397,7 +442,11 @@ function Home(props) {
             </div>
             <div className={styles.blogs}>
               {blogs?.length > 0 ? (
-                <Blogs blogs={blogs} time={datas?.search_time_ms} />
+                <Blogs
+                  blogs={blogs}
+                  time={datas?.search_time_ms}
+                  remove={handleDelete}
+                />
               ) : (
                 <div className={styles.big_logo}>
                   {loading ? (

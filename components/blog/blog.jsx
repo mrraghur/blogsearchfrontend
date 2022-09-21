@@ -8,7 +8,7 @@ import { MdDelete } from "react-icons/md";
 
 import styles from "./blog.module.css";
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, remove }) => {
   const router = useRouter();
 
   const goToBlog = () => {
@@ -43,7 +43,10 @@ const Blog = ({ blog }) => {
           <IoMdShareAlt className={styles.icon} />
           <p>Share</p>
         </div>
-        <div className={styles.delete}>
+        <div
+          className={styles.delete}
+          onClick={() => remove(blog?.document?.id)}
+        >
           <MdDelete className={styles.icon} />
           <p>Delete</p>
         </div>
