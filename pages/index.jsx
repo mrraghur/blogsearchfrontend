@@ -132,7 +132,7 @@ function Home() {
         }
       }
     }
-  }, [router.asPath]);
+  }, []);
 
   //filters
   const handleCategories = async (event, value) => {
