@@ -30,22 +30,22 @@ function Home() {
   const { register, handleSubmit, reset } = useForm();
 
   const fetchBlogs = async (data) => {
-    setLoading(true);
-
-    await fetch(`/api/${data?.key}`, {
-      body: JSON.stringify(),
+    const results = await fetch(`/api/${data?.key}`, {
       method: "POST",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setLoading(false);
-        setBlogs(data?.blogs?.results[0]?.hits);
-        setDatas(data?.blogs?.results[0]);
-      });
+    }).then((res) => res.json());
+
+    return new Promise((resolve, reject) => {
+      if (results) {
+        resolve(results);
+      } else {
+        reject("error");
+      }
+    });
   };
 
   const handleSearch = async (data) => {
     if (!loading) {
+      setLoading(true);
       setBlogs([]);
 
       //add category to url
@@ -53,18 +53,73 @@ function Home() {
       params.set("key", data?.key);
       router.push(`/?${params.toString()}`);
 
-      fetchBlogs(data);
+      await fetchBlogs(data).then((results) => {
+        setLoading(false);
+        setBlogs(results?.blogs?.results[0]?.hits);
+        setDatas(results?.blogs?.results[0]);
+      });
     }
   };
 
   useEffect(() => {
     if (router.asPath.split("?")[1]) {
+      setLoading(true);
       if (router.asPath.split("?")[1].includes("&")) {
         const keyStr = router.asPath.split("?")[1].split("&")[0];
         const anotherStr = router.asPath.split("?")[1].split("&")[1];
 
         if (keyStr.split("=")[0] == "key") {
-          fetchBlogs({ key: keyStr.split("=")[1] });
+          fetchBlogs({ key: keyStr.split("=")[1] }).then((res) => {
+            setDatas(res?.blogs?.results[0]);
+            const filter = anotherStr.split("=")[0];
+
+            switch (filter) {
+              case "category":
+                const one = res?.blogs?.results[0]?.hits?.filter((result) => {
+                  if (result?.document?.category === anotherStr.split("=")[1]) {
+                    return true;
+                  }
+                });
+                setLoading(false);
+                setBlogs(one);
+                break;
+
+              case "audience":
+                const two = res?.blogs?.results[0]?.hits?.filter((result) => {
+                  if (result?.document?.aud === anotherStr.split("=")[1]) {
+                    return true;
+                  }
+                });
+                setLoading(false);
+                setBlogs(two);
+                break;
+
+              case "country":
+                const three = res?.blogs?.results[0]?.hits?.filter((result) => {
+                  if (
+                    result?.document?.countries === anotherStr.split("=")[1]
+                  ) {
+                    return true;
+                  }
+                });
+                setLoading(false);
+                setBlogs(three);
+                break;
+
+              case "name":
+                const four = res?.blogs?.results[0]?.hits?.filter((result) => {
+                  if (result?.document?.names === anotherStr.split("=")[1]) {
+                    return true;
+                  }
+                });
+                setLoading(false);
+                setBlogs(four);
+                break;
+
+              default:
+                break;
+            }
+          });
           reset({
             key: keyStr
               .split("=")[1]
@@ -74,53 +129,14 @@ function Home() {
               .replace(/2B/g, ""),
           });
         }
-
-        const filter = anotherStr.split("=")[0];
-
-        switch (filter) {
-          case "category":
-            const one = datas?.hits?.filter((result) => {
-              if (result?.document?.category === anotherStr.split("=")[1]) {
-                return true;
-              }
-            });
-            setBlogs(one);
-            break;
-
-          case "audience":
-            const two = datas?.hits?.filter((result) => {
-              if (result?.document?.aud === anotherStr.split("=")[1]) {
-                return true;
-              }
-            });
-            setBlogs(two);
-            break;
-
-          case "country":
-            const three = datas?.hits?.filter((result) => {
-              if (result?.document?.countries === anotherStr.split("=")[1]) {
-                return true;
-              }
-            });
-            setBlogs(three);
-            break;
-
-          case "name":
-            const four = datas?.hits?.filter((result) => {
-              if (result?.document?.names === anotherStr.split("=")[1]) {
-                return true;
-              }
-            });
-            setBlogs(four);
-            break;
-
-          default:
-            break;
-        }
       } else {
         const keyStr = router.asPath.split("?")[1];
         if (keyStr.split("=")[0] == "key") {
-          fetchBlogs({ key: keyStr.split("=")[1] });
+          fetchBlogs({ key: keyStr.split("=")[1] }).then((res) => {
+            setLoading(false);
+            setBlogs(results?.blogs?.results[0]?.hits);
+            setDatas(results?.blogs?.results[0]);
+          });
           reset({
             key: keyStr
               .split("=")[1]
