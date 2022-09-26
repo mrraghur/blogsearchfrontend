@@ -26,6 +26,7 @@ function Home() {
   const [datas, setDatas] = React.useState([]);
   const [filters, setFilters] = React.useState(false);
   const [actions, setActions] = React.useState(false);
+  const [upload, setUpload] = React.useState(false);
 
   const { register, handleSubmit, reset } = useForm();
 

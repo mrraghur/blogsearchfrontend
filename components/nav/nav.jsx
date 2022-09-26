@@ -23,7 +23,7 @@ const Nav = ({ reset }) => {
       <div className={styles.nav}>
         <ul>
           <li>Home</li>
-          <li>Directory</li>
+          <li>Upload</li>
           <li>Blog Rankings</li>
           <li>Best Posts</li>
           <li>Submit Blog</li>

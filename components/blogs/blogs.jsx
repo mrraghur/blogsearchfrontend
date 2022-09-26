@@ -5,7 +5,7 @@ import Paginate from "../paginate/paginate";
 import styles from "./blogs.module.css";
 
 const Blogs = ({ blogs, time, remove }) => {
-  const [blogsPerPage, setBlogsPerPage] = React.useState(10);
+  const [blogsPerPage, setBlogsPerPage] = React.useState(12);
   const [page, setPage] = React.useState(1);
 
   const indexOfLastPost = page * blogsPerPage;
