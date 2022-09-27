@@ -15,6 +15,7 @@ import Actions from "../components/actions/actions";
 
 import styles from "../styles/Home.module.css";
 import Blogs from "../components/blogs/blogs";
+import Upload from "../components/portals/upload/upload";
 import APortal from "../components/portals/actions/actions";
 import FPortal from "../components/portals/filters/filters";
 
@@ -383,9 +384,14 @@ function Home() {
     setBlogs(blogs.filter((blog) => blog?.document?.id !== id));
   };
 
+  const handleUpload = () => {
+    setUpload(!upload);
+  };
+
   return (
     <div className={styles.body}>
       {actions ? <APortal exportToCsv={handleExport} /> : null}
+      {upload ? <Upload close={handleUpload} /> : null}
       {filters ? (
         <FPortal
           datas={datas}
@@ -398,7 +404,7 @@ function Home() {
         />
       ) : null}
       <div className={styles.main}>
-        <Nav reset={goHome} />
+        <Nav reset={goHome} upload={handleUpload} />
         <div className={styles.container}>
           <Filters
             datas={datas}

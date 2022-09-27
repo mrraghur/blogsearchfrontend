@@ -6,7 +6,7 @@ import { FaBars } from "react-icons/fa";
 import styles from "./nav.module.css";
 import SideBar from "../sidebar/sidebar";
 
-const Nav = ({ reset }) => {
+const Nav = ({ reset, upload }) => {
   const [sidebar, setSidebar] = React.useState(false);
 
   const handleSidebar = () => {
@@ -23,7 +23,7 @@ const Nav = ({ reset }) => {
       <div className={styles.nav}>
         <ul>
           <li>Home</li>
-          <li>Upload</li>
+          <li onClick={() => upload()}>Upload</li>
           <li>Blog Rankings</li>
           <li>Best Posts</li>
           <li>Submit Blog</li>

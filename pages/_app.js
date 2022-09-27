@@ -22,6 +22,10 @@ function MyApp({
         <Head>
           <title>Blog-Search</title>
           <link rel="icon" href="/logo_white.png" type="image/png" />
+          <link
+            rel="stylesheet"
+            href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css"
+          />
         </Head>
         <Script
           id="one"
@@ -36,6 +40,7 @@ function MyApp({
              gtag('config', '${process.env.GOOGLE_ANALYTICS_ID}');
              `}
         </Script>
+        <script src="https://unpkg.com/flowbite@1.5.3/dist/flowbite.js"></script>
         <Component {...pageProps} />
       </ThemeProvider>
     </CacheProvider>
