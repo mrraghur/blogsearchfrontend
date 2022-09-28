@@ -1,11 +1,8 @@
 import React from "react";
+
 import styles from "./upload.module.css";
 
-const Upload = ({ close }) => {
-  const handleOnChange = (e) => {
-    console.log(e.target.files[0]);
-  };
-
+const Upload = ({ close, upload }) => {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -32,8 +29,7 @@ const Upload = ({ close }) => {
                 ></path>
               </svg>
               <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                <span className="font-semibold">Click to upload</span> or drag
-                and drop
+                <span className="font-semibold">Click to upload</span>
               </p>
             </div>
             <input
@@ -41,7 +37,7 @@ const Upload = ({ close }) => {
               type="file"
               accept={".csv"}
               className="hidden"
-              onChange={handleOnChange}
+              onChange={(e) => upload(e)}
             />
           </label>
         </div>

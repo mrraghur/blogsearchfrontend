@@ -1,3 +1,4 @@
+import Papa from "papaparse";
 import Image from "next/image";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -388,10 +389,41 @@ function Home() {
     setUpload(!upload);
   };
 
+  const uploadFile = async (e) => {
+    setUpload(false);
+    setLoading(true);
+
+    // Passing file data (event.target.files[0]) to parse using Papa.parse
+    Papa.parse(event.target.files[0], {
+      header: true,
+      skipEmptyLines: true,
+      complete: function (results) {
+        setLoading(false);
+        const keys = results.data[0]?.__parsed_extra;
+        const [, ...rest] = results.data;
+
+        let r = rest.map((v) =>
+          Object.fromEntries(keys.map((k, i) => [k, v?.__parsed_extra[i]]))
+        );
+
+        const data = r.map((v) => {
+          return {
+            highlights: [{ snippet: v.text }],
+            document: v,
+          };
+        });
+
+        console.log(data);
+        setBlogs(data);
+        setDatas({ hits: data, search_time_ms: 0 });
+      },
+    });
+  };
+
   return (
     <div className={styles.body}>
       {actions ? <APortal exportToCsv={handleExport} /> : null}
-      {upload ? <Upload close={handleUpload} /> : null}
+      {upload ? <Upload close={handleUpload} upload={uploadFile} /> : null}
       {filters ? (
         <FPortal
           datas={datas}

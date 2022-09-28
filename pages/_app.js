@@ -1,5 +1,4 @@
 import React from "react";
-import Head from "next/head";
 import Script from "next/script";
 import { CacheProvider } from "@emotion/react";
 import { ThemeProvider } from "@mui/material/styles";
@@ -19,14 +18,6 @@ function MyApp({
   return (
     <CacheProvider value={emotionCache}>
       <ThemeProvider theme={theme}>
-        <Head>
-          <title>Blog-Search</title>
-          <link rel="icon" href="/logo_white.png" type="image/png" />
-          <link
-            rel="stylesheet"
-            href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css"
-          />
-        </Head>
         <Script
           id="one"
           strategy="lazyOnload"
