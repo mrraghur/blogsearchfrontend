@@ -22,6 +22,9 @@ const FPortal = ({
   const [countries, setCountries] = React.useState([]);
   const [names, setNames] = React.useState([]);
 
+  const [shownames, setShownames] = React.useState(false);
+  const [showCountries, setShowCountries] = React.useState(false);
+
   const { register, handleSubmit, reset } = useForm();
   const {
     register: register1,
@@ -54,6 +57,16 @@ const FPortal = ({
     );
     setNames(_.countBy(datas?.hits?.map((data) => data.document?.names)));
   }, [datas]);
+
+  const handleShowCountries = () => {
+    setShownames(false);
+    setShowCountries(!showCountries);
+  };
+
+  const handleShowNames = () => {
+    setShowCountries(false);
+    setShownames(!shownames);
+  };
 
   return (
     <div className={styles.container}>
@@ -122,17 +135,44 @@ const FPortal = ({
           <p>Countries</p>
         </div>
         <form className={styles.list} onSubmit={handleSubmit1(handleCountries)}>
-          {Object.keys(countries).map((country, index) => (
-            <div className={styles.list_item} key={index}>
-              <div className={styles.item_left}>
-                <input type="checkbox" {...register1(`${country}`)} />
-                <p>{country}</p>
-              </div>
-              <div className={styles.item_right}>
-                <p>{countries[country]}</p>
-              </div>
-            </div>
-          ))}
+          {showCountries ? (
+            <>
+              {Object.keys(countries).map((country, index) => (
+                <div className={styles.list_item} key={index}>
+                  <div className={styles.item_left}>
+                    <input type="checkbox" {...register1(`${country}`)} />
+                    <p>{country}</p>
+                  </div>
+                  <div className={styles.item_right}>
+                    <p>{countries[country]}</p>
+                  </div>
+                </div>
+              ))}
+            </>
+          ) : (
+            <>
+              {Object.keys(countries)
+                .slice(0, 5)
+                .map((country, index) => (
+                  <div className={styles.list_item} key={index}>
+                    <div className={styles.item_left}>
+                      <input type="checkbox" {...register1(`${country}`)} />
+                      <p>{country}</p>
+                    </div>
+                    <div className={styles.item_right}>
+                      <p>{countries[country]}</p>
+                    </div>
+                  </div>
+                ))}
+            </>
+          )}
+          <button
+            type="button"
+            className={styles.button}
+            onClick={handleShowCountries}
+          >
+            {showCountries ? `Show less` : `Show more`}
+          </button>
           <button type="submit" className={styles.button}>
             Filter
           </button>
@@ -143,17 +183,44 @@ const FPortal = ({
           <p>Names</p>
         </div>
         <form className={styles.list} onSubmit={handleSubmit2(handleNames)}>
-          {Object.keys(names).map((name, index) => (
-            <div className={styles.list_item} key={index}>
-              <div className={styles.item_left}>
-                <input type="checkbox" {...register2(`${name}`)} />
-                <p>{name}</p>
-              </div>
-              <div className={styles.item_right}>
-                <p>{names[name]}</p>
-              </div>
-            </div>
-          ))}
+          {shownames ? (
+            <>
+              {Object.keys(names).map((name, index) => (
+                <div className={styles.list_item} key={index}>
+                  <div className={styles.item_left}>
+                    <input type="checkbox" {...register2(`${name}`)} />
+                    <p>{name}</p>
+                  </div>
+                  <div className={styles.item_right}>
+                    <p>{names[name]}</p>
+                  </div>
+                </div>
+              ))}
+            </>
+          ) : (
+            <>
+              {Object.keys(names)
+                .slice(0, 5)
+                .map((name, index) => (
+                  <div className={styles.list_item} key={index}>
+                    <div className={styles.item_left}>
+                      <input type="checkbox" {...register2(`${name}`)} />
+                      <p>{name}</p>
+                    </div>
+                    <div className={styles.item_right}>
+                      <p>{names[name]}</p>
+                    </div>
+                  </div>
+                ))}
+            </>
+          )}
+          <button
+            type="button"
+            className={styles.button}
+            onClick={handleShowNames}
+          >
+            {shownames ? `Show less` : `Show more`}
+          </button>
           <button type="submit" className={styles.button}>
             Filter
           </button>
