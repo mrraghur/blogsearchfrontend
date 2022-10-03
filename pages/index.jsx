@@ -1,4 +1,3 @@
-import Papa from "papaparse";
 import Image from "next/image";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -16,7 +15,6 @@ import Actions from "../components/actions/actions";
 
 import styles from "../styles/Home.module.css";
 import Blogs from "../components/blogs/blogs";
-import Upload from "../components/portals/upload/upload";
 import APortal from "../components/portals/actions/actions";
 import FPortal from "../components/portals/filters/filters";
 
@@ -28,7 +26,6 @@ function Home() {
   const [datas, setDatas] = React.useState([]);
   const [filters, setFilters] = React.useState(false);
   const [actions, setActions] = React.useState(false);
-  const [upload, setUpload] = React.useState(false);
 
   const { register, handleSubmit, reset } = useForm();
 
@@ -385,45 +382,9 @@ function Home() {
     setBlogs(blogs.filter((blog) => blog?.document?.id !== id));
   };
 
-  const handleUpload = () => {
-    setUpload(!upload);
-  };
-
-  const uploadFile = async (e) => {
-    setUpload(false);
-    setLoading(true);
-
-    // Passing file data (event.target.files[0]) to parse using Papa.parse
-    Papa.parse(event.target.files[0], {
-      header: true,
-      skipEmptyLines: true,
-      complete: function (results) {
-        setLoading(false);
-        const keys = results.data[0]?.__parsed_extra;
-        const [, ...rest] = results.data;
-
-        let r = rest.map((v) =>
-          Object.fromEntries(keys.map((k, i) => [k, v?.__parsed_extra[i]]))
-        );
-
-        const data = r.map((v) => {
-          return {
-            highlights: [{ snippet: v.text }],
-            document: v,
-          };
-        });
-
-        console.log(data);
-        setBlogs(data);
-        setDatas({ hits: data, search_time_ms: 0 });
-      },
-    });
-  };
-
   return (
     <div className={styles.body}>
       {actions ? <APortal exportToCsv={handleExport} /> : null}
-      {upload ? <Upload close={handleUpload} upload={uploadFile} /> : null}
       {filters ? (
         <FPortal
           datas={datas}
@@ -436,7 +397,7 @@ function Home() {
         />
       ) : null}
       <div className={styles.main}>
-        <Nav reset={goHome} upload={handleUpload} />
+        <Nav reset={goHome} />
         <div className={styles.container}>
           <Filters
             datas={datas}

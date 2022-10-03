@@ -1,8 +1,8 @@
 import React from "react";
 
-import styles from "./upload.module.css";
+import styles from "./uploader.module.css";
 
-const Upload = ({ close, upload }) => {
+const Uploader = ({ upload }) => {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -42,9 +42,8 @@ const Upload = ({ close, upload }) => {
           </label>
         </div>
       </div>
-      <div className={styles.close} onClick={() => close()}></div>
     </div>
   );
 };
 
-export default Upload;
+export default Uploader;

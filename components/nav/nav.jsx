@@ -1,16 +1,26 @@
 import React from "react";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 import { FaBars } from "react-icons/fa";
 
 import styles from "./nav.module.css";
 import SideBar from "../sidebar/sidebar";
 
-const Nav = ({ reset, upload }) => {
+const Nav = ({ reset }) => {
   const [sidebar, setSidebar] = React.useState(false);
+  const router = useRouter();
 
   const handleSidebar = () => {
     setSidebar(!sidebar);
+  };
+
+  const goToUpload = () => {
+    router.push("/upload");
+  };
+
+  const goToHome = () => {
+    router.push("/");
   };
 
   return (
@@ -22,8 +32,8 @@ const Nav = ({ reset, upload }) => {
       </div>
       <div className={styles.nav}>
         <ul>
-          <li>Home</li>
-          <li onClick={() => upload()}>Upload</li>
+          <li onClick={goToHome}>Home</li>
+          <li onClick={goToUpload}>Upload</li>
           <li>Blog Rankings</li>
           <li>Best Posts</li>
           <li>Submit Blog</li>
