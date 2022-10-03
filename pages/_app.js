@@ -31,7 +31,7 @@ function MyApp({
              gtag('config', '${process.env.GOOGLE_ANALYTICS_ID}');
              `}
         </Script>
-        <script src="https://unpkg.com/flowbite@1.5.3/dist/flowbite.js"></script>
+        <Script src="https://unpkg.com/flowbite@1.5.3/dist/flowbite.js"></Script>
         <Component {...pageProps} />
       </ThemeProvider>
     </CacheProvider>
