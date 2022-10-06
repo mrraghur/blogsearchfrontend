@@ -1,5 +1,6 @@
 import React from "react";
 import Papa from "papaparse";
+import Head from "next/head";
 
 import Nav from "../components/nav/nav";
 import Footer from "../components/footer/footer";
@@ -37,6 +38,9 @@ const Upload = () => {
 
   return (
     <div className={styles.container}>
+      <Head>
+        <title>Blogs_search - Upload</title>
+      </Head>
       <Nav reset={() => {}} />
       <div className={styles.content}>
         {data.length > 0 ? (

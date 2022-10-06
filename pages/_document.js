@@ -4,7 +4,6 @@ export default function Document() {
   return (
     <Html>
       <Head>
-        <title>Blog-Search</title>
         <link rel="icon" href="/logo_white.png" type="image/png" />
         <link
           rel="stylesheet"

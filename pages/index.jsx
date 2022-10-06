@@ -1,3 +1,4 @@
+import Head from "next/head";
 import Image from "next/image";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -380,6 +381,9 @@ function Home() {
 
   return (
     <div className={styles.body}>
+      <Head>
+        <title>Blogs_search - Blogs</title>
+      </Head>
       {actions ? <APortal exportToCsv={handleExport} /> : null}
       {filters ? (
         <FPortal
