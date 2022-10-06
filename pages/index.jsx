@@ -1,8 +1,8 @@
 import Image from "next/image";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { ExportToCsv } from "export-to-csv";
 import { useRouter, withRouter } from "next/router";
+import { ExportToCsv } from "export-to-csv-file";
 
 import { FiSearch } from "react-icons/fi";
 import { GrClose } from "react-icons/gr";
@@ -363,19 +363,15 @@ function Home() {
       decimalSeparator: ".",
       showLabels: true,
       showTitle: true,
-      title: "Search results",
+      title: "My Awesome CSV",
       useTextFile: false,
       useBom: true,
       useKeysAsHeaders: true,
+      // headers: ['Column 1', 'Column 2', etc...] <-- Won't work with useKeysAsHeaders present!
     };
 
     const csvExporter = new ExportToCsv(options);
-
-    const data = blogs.reduce((arr, blog) => {
-      return [...arr, blog.document];
-    }, []);
-
-    csvExporter.generateCsv(data);
+    csvExporter.generateCsv(datas?.hits);
   };
 
   const handleDelete = (id) => {

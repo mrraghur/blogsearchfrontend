@@ -1,16 +1,25 @@
 import React from "react";
 import Papa from "papaparse";
-import { DataGrid } from "@mui/x-data-grid";
 
 import Nav from "../components/nav/nav";
-import styles from "../styles/Upload.module.css";
 import Footer from "../components/footer/footer";
+import styles from "../styles/Upload.module.css";
+import useTable from "../components/table/useTable";
+import Paginate from "../components/paginate/paginate";
 import Uploader from "../components/portals/uploader/uploader";
 
 const Upload = () => {
+  const [page, setPage] = React.useState(1);
+  const [rowsPerPage, setRowsPerPage] = React.useState(20);
   const [data, setData] = React.useState([]);
   const [columns, setColumns] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+
+  const { slice } = useTable(data, page, rowsPerPage);
+
+  const handlePaginate = (val) => {
+    setPage(val);
+  };
 
   const uploadFile = async (e) => {
     setLoading(true);
@@ -20,26 +29,8 @@ const Upload = () => {
       skipEmptyLines: true,
       complete: function (results) {
         setLoading(false);
-
-        //columns
-        const keys = results.data[0]?.__parsed_extra;
-        const columns = keys.map((key) => {
-          return {
-            field: key,
-            headerName: key,
-            width: 200,
-            sortable: true,
-          };
-        });
-
-        //data
-        const [, ...rest] = results.data;
-        let r = rest.map((v) =>
-          Object.fromEntries(keys.map((k, i) => [k, v?.__parsed_extra[i]]))
-        );
-
-        setColumns(columns);
-        setData(r);
+        setColumns(Object.keys(results.data[0]));
+        setData(results?.data);
       },
     });
   };
@@ -47,19 +38,41 @@ const Upload = () => {
   return (
     <div className={styles.container}>
       <Nav reset={() => {}} />
-      {data.length > 0 ? (
-        <div style={{ height: 1000, width: "100%" }}>
-          <DataGrid
-            rows={data}
-            columns={columns}
-            pageSize={16}
-            rowsPerPageOptions={[20]}
-            checkboxSelection
-          />
-        </div>
-      ) : (
-        <Uploader upload={uploadFile} />
-      )}
+      <div className={styles.content}>
+        {data.length > 0 ? (
+          <>
+            <table className="text-sm text-center">
+              <thead className="uppercase">
+                <tr>
+                  {columns.map((col, index) => (
+                    <th key={index} scope="col" className="px-5 py-5">
+                      {col}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {slice.map((dat, index) => (
+                  <tr key={index}>
+                    {Object.values(dat).map((one, index) => (
+                      <td key={index} scope="row" className="px-5 py-5">
+                        {one}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <Paginate
+              blogsPerPage={rowsPerPage}
+              len={data?.length}
+              paginate={handlePaginate}
+            />
+          </>
+        ) : (
+          <Uploader upload={uploadFile} />
+        )}
+      </div>
       <Footer />
     </div>
   );
