@@ -3,7 +3,7 @@ import Image from "next/image";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter, withRouter } from "next/router";
-import { ExportToCsv } from "export-to-csv-file";
+// import { ExportToCsv } from "export-to-csv-file";
 
 import { FiSearch } from "react-icons/fi";
 import { GrClose } from "react-icons/gr";
@@ -358,21 +358,20 @@ function Home() {
   };
 
   const handleExport = () => {
-    const options = {
-      fieldSeparator: ",",
-      quoteStrings: '"',
-      decimalSeparator: ".",
-      showLabels: true,
-      showTitle: true,
-      title: "My Awesome CSV",
-      useTextFile: false,
-      useBom: true,
-      useKeysAsHeaders: true,
-      // headers: ['Column 1', 'Column 2', etc...] <-- Won't work with useKeysAsHeaders present!
-    };
-
-    const csvExporter = new ExportToCsv(options);
-    csvExporter.generateCsv(datas?.hits);
+    // const options = {
+    //   fieldSeparator: ",",
+    //   quoteStrings: '"',
+    //   decimalSeparator: ".",
+    //   showLabels: true,
+    //   showTitle: true,
+    //   title: "My Awesome CSV",
+    //   useTextFile: false,
+    //   useBom: true,
+    //   useKeysAsHeaders: true,
+    //   // headers: ['Column 1', 'Column 2', etc...] <-- Won't work with useKeysAsHeaders present!
+    // };
+    // const csvExporter = new ExportToCsv(options);
+    // csvExporter.generateCsv(datas?.hits);
   };
 
   const handleDelete = (id) => {
