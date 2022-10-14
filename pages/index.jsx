@@ -381,7 +381,7 @@ function Home() {
   return (
     <div className={styles.body}>
       <Head>
-        <title>Blogs_search - Blogs</title>
+        <title>Blogs</title>
       </Head>
       {actions ? <APortal exportToCsv={handleExport} /> : null}
       {filters ? (

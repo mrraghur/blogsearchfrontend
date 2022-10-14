@@ -3,15 +3,17 @@ import Papa from "papaparse";
 import Head from "next/head";
 
 import Nav from "../components/nav/nav";
-import Footer from "../components/footer/footer";
+import { parseIfJson } from "../utils/parse";
 import styles from "../styles/Upload.module.css";
+import Footer from "../components/footer/footer";
 import useTable from "../components/table/useTable";
+import Filters from "../components/filters/filters";
 import Paginate from "../components/paginate/paginate";
 import Uploader from "../components/portals/uploader/uploader";
 
 const Upload = () => {
   const [page, setPage] = React.useState(1);
-  const [rowsPerPage, setRowsPerPage] = React.useState(20);
+  const [rowsPerPage, setRowsPerPage] = React.useState(8);
   const [data, setData] = React.useState([]);
   const [columns, setColumns] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
@@ -29,6 +31,7 @@ const Upload = () => {
       header: true,
       skipEmptyLines: true,
       complete: function (results) {
+        console.log(results.data);
         setLoading(false);
         setColumns(Object.keys(results.data[0]));
         setData(results?.data);
@@ -36,43 +39,40 @@ const Upload = () => {
     });
   };
 
+  console.log(slice);
+
   return (
     <div className={styles.container}>
       <Head>
-        <title>Blogs_search - Upload</title>
+        <title>Upload</title>
       </Head>
       <Nav reset={() => {}} />
       <div className={styles.content}>
+        <Filters />
         {data.length > 0 ? (
-          <>
-            <table className="text-sm text-center">
-              <thead className="uppercase">
-                <tr>
-                  {columns.map((col, index) => (
-                    <th key={index} scope="col" className="px-5 py-5">
-                      {col}
-                    </th>
+          <div className={styles.data}>
+            <div className={styles.blogs}>
+              {slice?.map((item, index) => (
+                <div key={index} className={styles.blog}>
+                  {Object.keys(item).map((key, index) => (
+                    <div key={index} className={styles.blogItem}>
+                      <span className={styles.key}>{key}:</span>
+                      <span className={styles.value}>
+                        {parseIfJson(item[key]).length > 50
+                          ? `${item[key].substr(0, 50)}...`
+                          : item[key]}
+                      </span>
+                    </div>
                   ))}
-                </tr>
-              </thead>
-              <tbody>
-                {slice.map((dat, index) => (
-                  <tr key={index}>
-                    {Object.values(dat).map((one, index) => (
-                      <td key={index} scope="row" className="px-5 py-5">
-                        {one}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                </div>
+              ))}
+            </div>
             <Paginate
               blogsPerPage={rowsPerPage}
               len={data?.length}
               paginate={handlePaginate}
             />
-          </>
+          </div>
         ) : (
           <Uploader upload={uploadFile} />
         )}

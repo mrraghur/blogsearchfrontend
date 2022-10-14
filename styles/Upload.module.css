@@ -6,5 +6,40 @@
 .content {
   width: 100%;
   height: auto;
-  overflow: scroll;
+  padding: 5px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.content .data {
+  width: 80%;
+  margin: 0 10px;
+  height: auto;
+  background: var(--white);
+}
+
+.content .data .blogs {
+  width: 100%;
+  height: auto;
+  padding: 0 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.content .data .blogs .blog {
+  width: 50%;
+  height: auto;
+  margin: 0 0 20px 0;
+}
+
+.content .data .blogs .blog .blogItem {
+  width: 50%;
+  height: auto;
+}
+
+.content .data .blogs .blog .blogItem .value {
+  font-weight: 700;
 }
