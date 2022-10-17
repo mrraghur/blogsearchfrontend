@@ -7,8 +7,8 @@ import { parseIfJson } from "../utils/parse";
 import styles from "../styles/Upload.module.css";
 import Footer from "../components/footer/footer";
 import useTable from "../components/table/useTable";
-import Filters from "../components/filters/filters";
 import Paginate from "../components/paginate/paginate";
+import AnonymousFilters from "../components/filters/anonymous";
 import Uploader from "../components/portals/uploader/uploader";
 
 const Upload = () => {
@@ -31,15 +31,12 @@ const Upload = () => {
       header: true,
       skipEmptyLines: true,
       complete: function (results) {
-        console.log(results.data);
         setLoading(false);
         setColumns(Object.keys(results.data[0]));
         setData(results?.data);
       },
     });
   };
-
-  console.log(slice);
 
   return (
     <div className={styles.container}>
@@ -48,7 +45,7 @@ const Upload = () => {
       </Head>
       <Nav reset={() => {}} />
       <div className={styles.content}>
-        <Filters />
+        <AnonymousFilters data={data} />
         {data.length > 0 ? (
           <div className={styles.data}>
             <div className={styles.blogs}>
