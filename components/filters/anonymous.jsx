@@ -34,8 +34,8 @@ const AnonymousFilters = ({ data }) => {
     }
   }, [data]);
 
-  const handleFilter = (data) => {
-    console.log(data);
+  const handleFilter = (title) => (data) => {
+    console.log(title);
   };
 
   return (
@@ -51,13 +51,19 @@ const AnonymousFilters = ({ data }) => {
           <div className={styles.title}>
             <p>{filter?.title}</p>
           </div>
-          <form className={styles.list} onSubmit={handleSubmit(handleFilter)}>
+          <form
+            className={styles.list}
+            onSubmit={handleSubmit(handleFilter(filter?.title))}
+          >
             {Object.keys(filter?.data)
               .slice(0, 5)
               .map((item, index) => (
                 <div className={styles.list_item} key={index}>
                   <div className={styles.item_left}>
-                    <input type="checkbox" {...register(`${item}`)} />
+                    <input
+                      type="checkbox"
+                      {...register(`${filter?.title}_${item}`)}
+                    />
                     <p>{item}</p>
                   </div>
                   <div className={styles.item_right}>
