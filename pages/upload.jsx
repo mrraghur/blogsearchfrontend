@@ -3,7 +3,6 @@ import Papa from "papaparse";
 import Head from "next/head";
 
 import Nav from "../components/nav/nav";
-import { parseIfJson } from "../utils/parse";
 import styles from "../styles/Upload.module.css";
 import Footer from "../components/footer/footer";
 import useTable from "../components/table/useTable";
@@ -13,9 +12,10 @@ import Uploader from "../components/portals/uploader/uploader";
 
 const Upload = () => {
   const [page, setPage] = React.useState(1);
-  const [rowsPerPage, setRowsPerPage] = React.useState(8);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [data, setData] = React.useState([]);
   const [columns, setColumns] = React.useState([]);
+  const [results, setResults] = React.useState({ data: [] });
   const [loading, setLoading] = React.useState(false);
 
   const { slice } = useTable(data, page, rowsPerPage);
@@ -32,10 +32,27 @@ const Upload = () => {
       skipEmptyLines: true,
       complete: function (results) {
         setLoading(false);
-        setColumns(Object.keys(results.data[0]));
+        setResults(results);
         setData(results?.data);
+        setColumns(Object.keys(results.data[0]));
       },
     });
+  };
+
+  const handleFilter = (title, key) => {
+    if (title === "Continents") {
+      const filtered = results?.data.filter((item) => item.Continent === key);
+      setData(filtered);
+    } else if (title === "Countries") {
+      const filtered = results?.data.filter((item) => item.Country === key);
+      setData(filtered);
+    } else {
+      setData(results?.data);
+    }
+  };
+
+  const handleReset = () => {
+    setData(results?.data);
   };
 
   return (
@@ -45,24 +62,39 @@ const Upload = () => {
       </Head>
       <Nav reset={() => {}} />
       <div className={styles.content}>
-        <AnonymousFilters data={data} />
+        <AnonymousFilters
+          data={results?.data}
+          filter={handleFilter}
+          handleReset={handleReset}
+        />
         {data.length > 0 ? (
           <div className={styles.data}>
             <div className={styles.blogs}>
-              {slice?.map((item, index) => (
-                <div key={index} className={styles.blog}>
-                  {Object.keys(item).map((key, index) => (
-                    <div key={index} className={styles.blogItem}>
-                      <span className={styles.key}>{key}:</span>
-                      <span className={styles.value}>
-                        {parseIfJson(item[key]).length > 50
-                          ? `${item[key].substr(0, 50)}...`
-                          : item[key]}
-                      </span>
-                    </div>
+              <table className="w-full text-left text-gray-500 dark:text-gray-400 rounded-lg">
+                <thead className="text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                  <tr>
+                    {columns.map((col, i) => (
+                      <th scope="col" className="py-3 px-6" key={i}>
+                        {col}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {slice.map((row, i) => (
+                    <tr
+                      className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                      key={i}
+                    >
+                      {Object.values(row).map((col, j) => (
+                        <td className="py-4 px-6" key={j}>
+                          {col}
+                        </td>
+                      ))}
+                    </tr>
                   ))}
-                </div>
-              ))}
+                </tbody>
+              </table>
             </div>
             <Paginate
               blogsPerPage={rowsPerPage}

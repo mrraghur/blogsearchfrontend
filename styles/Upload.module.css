@@ -23,10 +23,19 @@
   width: 100%;
   height: auto;
   padding: 0 10px;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  flex-wrap: wrap;
+  border-radius: 10px;
+  overflow-x: scroll;
+}
+
+.content .data .blogs::-webkit-scrollbar {
+  height: 7px;
+  border-radius: 50px;
+  background: transparent;
+  border: none;
+}
+
+.content .data .blogs::-webkit-scrollbar-thumb {
+  background-color: var(--gray);
 }
 
 .content .data .blogs .blog {

@@ -6,7 +6,7 @@ import { GoSettings } from "react-icons/go";
 
 import styles from "./filters.module.css";
 
-const AnonymousFilters = ({ data }) => {
+const AnonymousFilters = ({ data, filter, handleReset }) => {
   const [filters, setFilters] = React.useState([]);
   const { register, handleSubmit, reset } = useForm();
 
@@ -35,7 +35,16 @@ const AnonymousFilters = ({ data }) => {
   }, [data]);
 
   const handleFilter = (title) => (data) => {
-    console.log(title);
+    Object.entries(data).forEach(([key, value]) => {
+      if (value) {
+        filter(title, key);
+      }
+    });
+  };
+
+  const onReset = () => {
+    reset();
+    handleReset();
   };
 
   return (
@@ -60,10 +69,7 @@ const AnonymousFilters = ({ data }) => {
               .map((item, index) => (
                 <div className={styles.list_item} key={index}>
                   <div className={styles.item_left}>
-                    <input
-                      type="checkbox"
-                      {...register(`${filter?.title}_${item}`)}
-                    />
+                    <input type="checkbox" {...register(`${item}`)} />
                     <p>{item}</p>
                   </div>
                   <div className={styles.item_right}>
@@ -80,6 +86,9 @@ const AnonymousFilters = ({ data }) => {
           )}
         </div>
       ))}
+      <button className={styles.button} onClick={onReset}>
+        Clear filters
+      </button>
     </div>
   );
 };
