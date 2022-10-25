@@ -13,7 +13,7 @@
 }
 
 .content .loading {
-  width: 80%;
+  width: 100%;
   height: 600px;
   display: flex;
   flex-direction: column;

@@ -2,7 +2,6 @@ import axios from "axios";
 import React from "react";
 import Head from "next/head";
 import Image from "next/image";
-import Papa from "papaparse"
 
 import Nav from "../components/nav/nav";
 import styles from "../styles/Upload.module.css";
@@ -28,55 +27,45 @@ const Upload = () => {
   };
 
   const fetchData = async (formData) => {
+  };
+  
+  const uploadFile = async (e) => {
     setLoading(true);
+
+    const formData = new FormData();
+    formData.append("file", e.target.files[0]);
+
     axios
-      .post(
+    .post(
         "http://search.interviewblindspots.com/displaycode/upload/",
         formData
       )
       .then((res) => {
-        setFilters(res.data);
         setLoading(false);
-        console.log(res.data);
+        setResults(res.data);
+        setData(res?.data?.values)
+        setFilters(res.data.filters);
+        setColumns(res?.data?.columnHeadings)
       });
-  };
 
-  const uploadFile = async (e) => {
-    const formData = new FormData();
-    formData.append("file", e.target.files[0]);
-
-    fetchData(formData);
-
-    Papa.parse(e.target.files[0], {
-      header: true,
-      skipEmptyLines: true,
-      complete: function (results) {
-        setResults(results);
-        setData(results?.data);
-        setColumns(Object.keys(results.data[0]));
-      },
-    });
   };
 
   const handleFilter = (title, key) => {
-
-    
     const ky = Object.keys(key).find((k) => key[k] === true);
-    console.log(title, ky, results.data);
+    const index = columns.indexOf(title);
 
     if(ky){
-      const filtered = results?.data?.filter((item) => {
-        return item[title] === ky;
+      const filtered = results?.values?.filter((item) => {
+        return item[index] === ky;
       });
       setData(filtered);
     }else{
-      setData(results?.data);
+      setData(results?.values)
     }
-
   };
 
   const handleReset = () => {
-    setData(results?.data);
+    setData(results?.values);
   };
 
   return (
