@@ -12,8 +12,17 @@
   align-items: flex-start;
 }
 
-.content .data {
+.content .loading {
   width: 80%;
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.content .data {
+  width: 100%;
   margin: 0 10px;
   height: auto;
   background: var(--white);
