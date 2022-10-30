@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 import { GoSettings } from "react-icons/go";
 
 import styles from "./filters.module.css";
 
-const AnonymousFilters = ({ data, filter, handleReset }) => {
+const AnonymousFilters = ({ data, filter, height, handleReset }) => {
   const { register, handleSubmit, reset } = useForm();
 
   const handleFilter = (title) => (data) => {
