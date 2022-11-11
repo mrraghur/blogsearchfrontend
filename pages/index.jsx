@@ -5,8 +5,8 @@ import { useForm } from "react-hook-form";
 import { useRouter, withRouter } from "next/router";
 // import { ExportToCsv } from "export-to-csv-file";
 
-import { FiSearch } from "react-icons/fi";
 import { GrClose } from "react-icons/gr";
+import { FiSearch } from "react-icons/fi";
 import { GoSettings } from "react-icons/go";
 
 import Nav from "../components/nav/nav";
