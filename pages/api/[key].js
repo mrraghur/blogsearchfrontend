@@ -7,7 +7,7 @@ const handler = async (req, res) => {
   const { key } = req.query;
 
   const blogs = await axios.post(
-    `${process.env.BACKEND_API}/multi_search?x-typesense-api-key=xyz`,
+    `${process.env.BACKEND_API}`,
     {
       searches: [
         {

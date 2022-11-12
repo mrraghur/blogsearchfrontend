@@ -133,7 +133,7 @@ function Home() {
       } else {
         const keyStr = router.asPath.split("?")[1];
         if (keyStr.split("=")[0] == "key") {
-          fetchBlogs({ key: keyStr.split("=")[1] }).then((res) => {
+          fetchBlogs({ key: keyStr.split("=")[1] }).then((results) => {
             setLoading(false);
             setBlogs(results?.blogs?.results[0]?.hits);
             setDatas(results?.blogs?.results[0]);
