@@ -1,5 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-
 import axios from "axios";
 import dotenv from "dotenv";
 
@@ -9,7 +7,7 @@ const handler = async (req, res) => {
   const { key } = req.query;
 
   const blogs = await axios.post(
-    `${process.env.BACKEND_API}/multi_search?x-typesense-api-key=xyz`,
+    `${process.env.BACKEND_API}`,
     {
       searches: [
         {
@@ -22,7 +20,9 @@ const handler = async (req, res) => {
           page: 1,
           per_page: 200,
           q: `${key}`,
+	num_typos: 1,
           query_by: "text,title,imgs,category",
+        query_by_weights: "2,2,2,1",
           sort_by: "",
         },
       ],

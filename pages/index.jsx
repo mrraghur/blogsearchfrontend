@@ -5,8 +5,8 @@ import { useForm } from "react-hook-form";
 import { useRouter, withRouter } from "next/router";
 // import { ExportToCsv } from "export-to-csv-file";
 
-import { FiSearch } from "react-icons/fi";
 import { GrClose } from "react-icons/gr";
+import { FiSearch } from "react-icons/fi";
 import { GoSettings } from "react-icons/go";
 
 import Nav from "../components/nav/nav";
@@ -133,7 +133,7 @@ function Home() {
       } else {
         const keyStr = router.asPath.split("?")[1];
         if (keyStr.split("=")[0] == "key") {
-          fetchBlogs({ key: keyStr.split("=")[1] }).then((res) => {
+          fetchBlogs({ key: keyStr.split("=")[1] }).then((results) => {
             setLoading(false);
             setBlogs(results?.blogs?.results[0]?.hits);
             setDatas(results?.blogs?.results[0]);
