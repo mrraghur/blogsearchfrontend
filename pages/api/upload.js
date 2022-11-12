@@ -1,22 +1,18 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-
 import axios from "axios";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 const handler = async (req, res) => {
-  // const { file } = req.body;
-  // console.log(req.file);
+  console.log(req.body);
 
-  const data = await axios.post(
-    `${process.env.BACKEND_API}/displaycode/upload/`,
-    {
-      file: req.body,
-    }
-  );
+  // await axios
+  //   .post(`${process.env.BACKEND_API}/upload/`, {
+  //     file: req.body,
+  //   })
+  //   .then((res) => {
+  //     console.log(res);
+  //     return res.status(200).json({ file: res?.data });
+  //   });
 
-  return res.status(200).json({ file: data?.data });
+  return { file: "file" };
 };
 
 export default handler;
