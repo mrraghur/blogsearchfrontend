@@ -57,7 +57,7 @@ const Upload = () => {
 
     axios
       .post(
-        "https://search.interviewblindspots.com/displaycode/upload/",
+        "https://backend.interviewblindspots.com/displaycode/upload/",
         formData
       )
       .then((res) => {
