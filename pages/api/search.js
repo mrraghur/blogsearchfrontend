@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const handler = async (req, res) => {
-  const { key } = req.query;
+  const { key } = req.body;
 
   const blogs = await axios.post(
     `${process.env.BACKEND_API}`,
