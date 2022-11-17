@@ -38,7 +38,7 @@ const Row = ({ filter, data, handleFilter, handleReset }) => {
     if (Object.keys(data[filter]).length > 5) {
       setMore(true);
     }
-  }, []);
+  }, [data, filter]);
 
   return (
     <div className={styles.audience}>

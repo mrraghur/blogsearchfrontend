@@ -1,11 +1,9 @@
 import Script from "next/script";
-// import { Provider } from "react-redux";
 import React, { useEffect } from "react";
 import { CacheProvider } from "@emotion/react";
 import { ThemeProvider } from "@mui/material/styles";
 
 import theme from "../utils/theme";
-// import store from "../store/index";
 import createEmotionCache from "../utils/createEmotion";
 
 import "../styles/globals.css";
@@ -18,7 +16,6 @@ function MyApp({
   emotionCache = clientSideEmotionCache,
 }) {
   return (
-    // <Provider store={store}>
     <CacheProvider value={emotionCache}>
       <ThemeProvider theme={theme}>
         <Script
@@ -38,7 +35,6 @@ function MyApp({
         <Component {...pageProps} />
       </ThemeProvider>
     </CacheProvider>
-    // </Provider>
   );
 }
 

@@ -1,9 +1,8 @@
+import React from "react";
 import axios from "axios";
 import Head from "next/head";
 import Image from "next/image";
-import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
 
 //icons
 import { FiSearch } from "react-icons/fi";
@@ -16,13 +15,8 @@ import Paginate from "../components/paginate/paginate";
 import AnonymousFilters from "../components/filters/anonymous";
 import Uploader from "../components/portals/uploader/uploader";
 
-//actions
-import { startLoading, stopLoading, setDatas } from "../store/reducers/csv";
-
 const Upload = () => {
   //configs
-  const inputRef = useRef();
-  const dispatch = useDispatch();
   const { handleSubmit, register, reset } = useForm();
 
   //local data
@@ -32,8 +26,8 @@ const Upload = () => {
   const [data, setData] = React.useState([]);
   const [columns, setColumns] = React.useState([]);
   const [results, setResults] = React.useState({ data: [] });
-  const datas = useSelector((state) => state.csv.data);
-  const loading = useSelector((state) => state.csv.loading);
+  const [datas, setDatas] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
   const [tableRange, setTableRange] = React.useState([]);
   const [slice, setSlice] = React.useState([]);
 
@@ -66,7 +60,7 @@ const Upload = () => {
 
   //getting data
   const uploadFile = async (e) => {
-    dispatch(startLoading());
+    setLoading(true);
     const file = e.target.files[0];
     const data = new FormData();
     data.append("file", file);
@@ -74,9 +68,9 @@ const Upload = () => {
     axios
       .post("https://backend.interviewblindspots.com/displaycode/upload/", data)
       .then((res) => {
-        dispatch(stopLoading());
         const { filters, columnHeadings, values } = res.data;
-        dispatch(setDatas(res.data));
+        setLoading(false);
+        setDatas(res.data);
         setFilters(filters);
         setColumns(columnHeadings);
         setData(values);

@@ -3,7 +3,6 @@ import Image from "next/image";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter, withRouter } from "next/router";
-// import { ExportToCsv } from "export-to-csv-file";
 
 import { GrClose } from "react-icons/gr";
 import { FiSearch } from "react-icons/fi";
