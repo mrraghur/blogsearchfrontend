@@ -23,7 +23,6 @@
     "lodash": "^4.17.21",
     "next": "12.2.5",
     "papaparse": "^5.3.2",
-    "phantomjs-prebuilt": "^2.1.16",
     "react": "18.2.0",
     "react-csv": "^2.2.2",
     "react-data-table-component": "^7.5.3",
@@ -31,7 +30,6 @@
     "react-hook-form": "^7.34.2",
     "react-icons": "^4.4.0",
     "react-redux": "^8.0.5",
-    "react-scripts": "^5.0.1",
     "styled-components": "^5.3.6"
   },
   "devDependencies": {
