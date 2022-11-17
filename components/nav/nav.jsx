@@ -15,9 +15,9 @@ const Nav = ({ reset }) => {
     setSidebar(!sidebar);
   };
 
-  // const goToUpload = () => {
-  //   router.push("/upload");
-  // };
+  const goToUpload = () => {
+    router.push("/upload");
+  };
 
   const goToHome = () => {
     router.push("/");
@@ -33,7 +33,7 @@ const Nav = ({ reset }) => {
       <div className={styles.nav}>
         <ul>
           <li onClick={goToHome}>Home</li>
-          {/* <li onClick={goToUpload}>Upload</li> */}
+          <li onClick={goToUpload}>Upload</li>
           <li>Blog Rankings</li>
           <li>Best Posts</li>
           <li>Submit Blog</li>
@@ -45,7 +45,7 @@ const Nav = ({ reset }) => {
       <div className={styles.tablet_nav}>
         <ul>
           <li onClick={goToHome}>Home</li>
-          <li>Directory</li>
+          <li onClick={goToUpload}>Upload</li>
         </ul>
         <div className={styles.bars} onClick={handleSidebar}>
           <FaBars className={styles.icon} />

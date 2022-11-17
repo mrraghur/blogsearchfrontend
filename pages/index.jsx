@@ -1,219 +1,498 @@
-import axios from "axios";
 import Head from "next/head";
 import Image from "next/image";
-import React, { useRef } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
+import { useRouter, withRouter } from "next/router";
+// import { ExportToCsv } from "export-to-csv-file";
 
-//icons
-import { FiSearch } from "react-icons/fi";
 import { GrClose } from "react-icons/gr";
+import { FiSearch } from "react-icons/fi";
+import { GoSettings } from "react-icons/go";
 
 import Nav from "../components/nav/nav";
-import styles from "../styles/Upload.module.css";
 import Footer from "../components/footer/footer";
-import Paginate from "../components/paginate/paginate";
-import AnonymousFilters from "../components/filters/anonymous";
-import Uploader from "../components/portals/uploader/uploader";
+import Filters from "../components/filters/filters";
+import Actions from "../components/actions/actions";
 
-//actions
-import { startLoading, stopLoading, setDatas } from "../store/reducers/csv";
+import styles from "../styles/Home.module.css";
+import Blogs from "../components/blogs/blogs";
+import APortal from "../components/portals/actions/actions";
+import FPortal from "../components/portals/filters/filters";
 
-const Upload = () => {
-  //configs
-  const inputRef = useRef();
-  const dispatch = useDispatch();
-  const { handleSubmit, register, reset } = useForm();
+function Home() {
+  const router = useRouter();
 
-  //local data
-  const [page, setPage] = React.useState(1);
-  const [filters, setFilters] = React.useState({});
-  const [rowsPerPage, setRowsPerPage] = React.useState(0);
-  const [data, setData] = React.useState([]);
-  const [columns, setColumns] = React.useState([]);
-  const [results, setResults] = React.useState({ data: [] });
-  const loading = useSelector((state) => state.csv.loading);
-  const [tableRange, setTableRange] = React.useState([]);
-  const [slice, setSlice] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  const [blogs, setBlogs] = React.useState([]);
+  const [datas, setDatas] = React.useState([]);
+  const [filters, setFilters] = React.useState(false);
+  const [actions, setActions] = React.useState(false);
 
-  //paginating the data
-  const calculateRange = (data, rowsPerPage) => {
-    const range = [];
-    const num = Math.ceil(data.length / rowsPerPage);
-    let i = 1;
-    for (let i = 1; i <= num; i++) {
-      range.push(i);
+  const { register, handleSubmit, reset } = useForm();
+
+  const fetchBlogs = async (data) => {
+    const results = await fetch(`/api/search`, {
+      body: {
+        key: `${data?.key}`,
+      },
+      method: "POST",
+    }).then((res) => res.json());
+
+    return new Promise((resolve, reject) => {
+      if (results) {
+        resolve(results);
+      } else {
+        reject("error");
+      }
+    });
+  };
+
+  const handleSearch = async (data) => {
+    if (!loading) {
+      setLoading(true);
+      setBlogs([]);
+
+      //add category to url
+      const params = new URLSearchParams(router.query);
+      params.set("key", data?.key);
+      router.push(`/?${params.toString()}`);
+
+      await fetchBlogs(data).then((results) => {
+        setLoading(false);
+        console.log(results);
+        // setBlogs(results?.blogs?.results[0]?.hits);
+        // setDatas(results?.blogs?.results[0]);
+      });
     }
-    return range;
   };
 
-  const sliceData = (data, page, rowsPerPage) => {
-    return data.slice((page - 1) * rowsPerPage, page * rowsPerPage);
-  };
+  useEffect(() => {
+    if (router.asPath.split("?")[1]) {
+      setLoading(true);
+      if (router.asPath.split("?")[1].includes("&")) {
+        const keyStr = router.asPath.split("?")[1].split("&")[0];
+        const anotherStr = router.asPath.split("?")[1].split("&")[1];
 
-  React.useEffect(() => {
-    const range = calculateRange(data, rowsPerPage);
-    setTableRange([...range]);
+        if (keyStr.split("=")[0] == "key") {
+          fetchBlogs({ key: keyStr.split("=")[1] }).then((res) => {
+            setDatas(res?.blogs?.results[0]);
+            const filter = anotherStr.split("=")[0];
 
-    const slice = sliceData(data, page, rowsPerPage);
-    setSlice([...slice]);
-  }, [rowsPerPage, data, page]);
+            switch (filter) {
+              case "category":
+                const one = res?.blogs?.results[0]?.hits?.filter((result) => {
+                  if (result?.document?.category === anotherStr.split("=")[1]) {
+                    return true;
+                  }
+                });
+                setLoading(false);
+                setBlogs(one);
+                break;
 
-  const handlePaginate = (val) => {
-    setPage(val);
-  };
+              case "audience":
+                const two = res?.blogs?.results[0]?.hits?.filter((result) => {
+                  if (result?.document?.aud === anotherStr.split("=")[1]) {
+                    return true;
+                  }
+                });
+                setLoading(false);
+                setBlogs(two);
+                break;
 
-  //getting data
-  const uploadFile = async (e) => {
-    dispatch(startLoading());
-    const file = e.target.files[0];
-    const data = new FormData();
-    data.append("file", file);
+              case "country":
+                const three = res?.blogs?.results[0]?.hits?.filter((result) => {
+                  if (
+                    result?.document?.countries === anotherStr.split("=")[1]
+                  ) {
+                    return true;
+                  }
+                });
+                setLoading(false);
+                setBlogs(three);
+                break;
 
-    axios
-      .post("https://backend.interviewblindspots.com/displaycode/upload/", data)
-      .then((res) => {
-        console.log(res);
-        dispatch(stopLoading());
-        const { filters, columnHeadings, values } = res.data;
-        dispatch(setDatas(res.data));
-        setFilters(filters);
-        setColumns(columnHeadings);
-        setData(values);
+              case "name":
+                const four = res?.blogs?.results[0]?.hits?.filter((result) => {
+                  if (result?.document?.names === anotherStr.split("=")[1]) {
+                    return true;
+                  }
+                });
+                setLoading(false);
+                setBlogs(four);
+                break;
+
+              default:
+                break;
+            }
+          });
+          reset({
+            key: keyStr
+              .split("=")[1]
+              .replace(/[+]/g, " ")
+              .replace(/%/g, "")
+              .replace(/25/g, "")
+              .replace(/2B/g, ""),
+          });
+        }
+      } else {
+        const keyStr = router.asPath.split("?")[1];
+        if (keyStr.split("=")[0] == "key") {
+          fetchBlogs({ key: keyStr.split("=")[1] }).then((results) => {
+            setLoading(false);
+            setBlogs(results?.blogs?.results[0]?.hits);
+            setDatas(results?.blogs?.results[0]);
+          });
+          reset({
+            key: keyStr
+              .split("=")[1]
+              .replace(/[+]/g, " ")
+              .replace(/%/g, "")
+              .replace(/25/g, "")
+              .replace(/2B/g, ""),
+          });
+        }
+      }
+    }
+  }, []);
+
+  //filters
+  const handleCategories = async (event, value) => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+    if (event.target.checked) {
+      //add category to url
+      const params = new URLSearchParams(router.query);
+      params.set("category", value);
+      // params.delete("category");
+      params.delete("audience");
+      params.delete("country");
+      params.delete("name");
+      router.push(`/?${params.toString()}`);
+
+      const filtered = datas?.hits?.filter((result) => {
+        if (result?.document?.category === value) {
+          return true;
+        }
       });
-  };
-
-  const handleFilter = (title, key) => {
-    console.log(title, key);
-    const ky = Object.keys(key).find((k) => key[k] === true);
-    const index = columns.indexOf(title);
-
-    if (ky) {
-      const filtered = results?.values?.filter((item) => {
-        return item[index] === ky;
-      });
-      setData(filtered);
+      setBlogs(filtered);
     } else {
-      setData(results?.values);
+      //remove category from url
+      const params = new URLSearchParams(router.query);
+      params.delete("category");
+      router.push(`/?${params.toString()}`);
+
+      setBlogs(datas?.hits);
+      setFilters(false);
     }
+  };
+
+  const handleAudiences = async (data) => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+    if (data?.beginner || data?.intermediate || data?.expert) {
+      const filtered = datas?.hits?.filter((result) => {
+        if (
+          (data?.beginner && result?.document?.aud === "beginner") ||
+          (data?.intermediate && result?.document?.aud === "intermediate") ||
+          (data?.expert && result?.document?.aud === "expert")
+        ) {
+          return true;
+        }
+      });
+      //add audience to url
+      const params = new URLSearchParams(router.query);
+      params.set("audience", filtered[0]?.document?.aud);
+      params.delete("category");
+      // params.delete("audience");
+      params.delete("country");
+      params.delete("name");
+      router.push(`/?${params.toString()}`);
+
+      setBlogs(filtered);
+      setFilters(false);
+    } else {
+      //remove category from url
+      const params = new URLSearchParams(router.query);
+      params.delete("audience");
+      router.push(`/?${params.toString()}`);
+
+      setBlogs(datas?.hits);
+      setFilters(false);
+    }
+  };
+
+  const handleCountries = async (data) => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+    if (Object.values(data)?.includes(true)) {
+      let filtered = [];
+      Object.entries(data).forEach(([key, value]) => {
+        if (value) {
+          const one = datas?.hits?.filter((result) => {
+            if (result?.document?.countries === key) {
+              return true;
+            }
+          });
+          filtered = [...filtered, ...one];
+          // console.log(one);
+        }
+      });
+      //add country to url
+      const params = new URLSearchParams(router.query);
+      params.set("country", filtered[0]?.document?.countries);
+      params.delete("category");
+      params.delete("audience");
+      // params.delete("country");
+      params.delete("name");
+      router.push(`/?${params.toString()}`);
+
+      setBlogs(filtered);
+      setFilters(false);
+    } else {
+      //remove country from url
+      const params = new URLSearchParams(router.query);
+      params.delete("country");
+      router.push(`/?${params.toString()}`);
+
+      setBlogs(datas?.hits);
+      setFilters(false);
+    }
+  };
+
+  const handleNames = async (data) => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+    if (Object.values(data)?.includes(true)) {
+      let filtered = [];
+      Object.entries(data).forEach(([key, value]) => {
+        if (value) {
+          const one = datas?.hits?.filter((result) => {
+            if (result?.document?.names === key) {
+              return true;
+            }
+          });
+          filtered = [...filtered, ...one];
+          // console.log(one);
+        }
+      });
+      //add name to url
+      const params = new URLSearchParams(router.query);
+      params.set("name", filtered[0]?.document?.names);
+      params.delete("category");
+      params.delete("audience");
+      params.delete("country");
+      // params.delete("name");
+      router.push(`/?${params.toString()}`);
+
+      setBlogs(filtered);
+      setFilters(false);
+    } else {
+      //remove name from url
+      const params = new URLSearchParams(router.query);
+      params.delete("name");
+      router.push(`/?${params.toString()}`);
+
+      setBlogs(datas?.hits);
+      setFilters(false);
+    }
+  };
+
+  const handleTime = (data) => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+    const filtered = datas?.hits?.filter((result) => {
+      if (
+        parseInt(data.min) <= parseInt(result?.document?.readingtime) &&
+        parseInt(result?.document?.readingtime) <= parseInt(data.max)
+      ) {
+        return true;
+      }
+    });
+
+    setBlogs(filtered);
+    setFilters(false);
   };
 
   const handleReset = () => {
-    setData(results?.values);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+    //remove all params from url
+    const params = new URLSearchParams(router.query);
+    params.delete("category");
+    params.delete("audience");
+    params.delete("country");
+    params.delete("name");
+    router.push(`/?${params.toString()}`);
+
+    setBlogs(datas?.hits);
   };
 
-  React.useEffect(() => {
-    const height = Math.max(
-      document.body.scrollHeight,
-      document.body.offsetHeight,
-      document.documentElement.clientHeight,
-      document.documentElement.scrollHeight,
-      document.documentElement.offsetHeight
-    );
-    const num = Math.floor((height - 250) / 50);
-    setRowsPerPage(num);
-  }, [results]);
+  const goHome = () => {
+    setLoading(false);
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+    setBlogs([]);
+    setDatas([]);
+    reset({ key: "" });
+    router.push({ pathname: `/`, query: {} }, undefined, {
+      shallow: true,
+    });
+  };
 
-  const handleSearch = (data) => {};
+  const handleActions = () => {
+    setActions(!actions);
+  };
+
+  const handleFilters = () => {
+    setFilters(!filters);
+  };
+
+  const handleExport = () => {
+    // const options = {
+    //   fieldSeparator: ",",
+    //   quoteStrings: '"',
+    //   decimalSeparator: ".",
+    //   showLabels: true,
+    //   showTitle: true,
+    //   title: "My Awesome CSV",
+    //   useTextFile: false,
+    //   useBom: true,
+    //   useKeysAsHeaders: true,
+    //   // headers: ['Column 1', 'Column 2', etc...] <-- Won't work with useKeysAsHeaders present!
+    // };
+    // const csvExporter = new ExportToCsv(options);
+    // csvExporter.generateCsv(datas?.hits);
+  };
+
+  const handleDelete = (id) => {
+    setBlogs(blogs.filter((blog) => blog?.document?.id !== id));
+  };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.body}>
       <Head>
-        <title>Home</title>
+        <title>Blogs</title>
       </Head>
-      <Nav reset={() => {}} />
-      <div className={styles.content}>
-        {loading ? (
-          <div className={styles.loading}>
-            <Image
-              src="/loader.svg"
-              width="150"
-              height="150"
-              alt="loading..."
-            />
-          </div>
-        ) : (
-          <>
-            {Object.keys(filters).length > 0 ? (
-              <>
-                <AnonymousFilters
-                  data={filters}
-                  filter={handleFilter}
-                  handleReset={handleReset}
-                />
-                <div className={styles.all}>
-                  <div className={styles.search}>
+      {actions ? <APortal exportToCsv={handleExport} /> : null}
+      {filters ? (
+        <FPortal
+          datas={datas}
+          handleCategories={handleCategories}
+          handleAudiences={handleAudiences}
+          handleCountries={handleCountries}
+          handleNames={handleNames}
+          handleTime={handleTime}
+          resetAll={handleReset}
+        />
+      ) : null}
+      <div className={styles.main}>
+        <Nav reset={goHome} />
+        <div className={styles.container}>
+          <Filters
+            datas={datas}
+            handleCategories={handleCategories}
+            handleAudiences={handleAudiences}
+            handleCountries={handleCountries}
+            handleNames={handleNames}
+            handleTime={handleTime}
+            resetAll={handleReset}
+          />
+          <div className={styles.content}>
+            <div className={styles.top}>
+              <div
+                className={styles.filters}
+                onClick={handleFilters}
+                style={
+                  filters
+                    ? { background: "var(--blue)", color: "var(--white)" }
+                    : {}
+                }
+              >
+                <GoSettings />
+              </div>
+              <div className={styles.white}>
+                <FiSearch className={styles.icon} />
+                <form
+                  action="#"
+                  className={styles.form}
+                  onSubmit={handleSubmit(handleSearch)}
+                >
+                  <input
+                    type="text"
+                    placeholder="Search here..."
+                    className={styles.search_input}
+                    required
+                    {...register("key")}
+                  />
+                  <button type="submit">
                     <FiSearch className={styles.icon} />
-                    <form
-                      action="#"
-                      className={styles.form}
-                      onSubmit={handleSubmit(handleSearch)}
-                    >
-                      <input
-                        type="text"
-                        placeholder="Search here..."
-                        className={styles.search_input}
-                        required
-                        {...register("key")}
-                      />
-                      <button type="submit">
-                        <FiSearch className={styles.icon} />
-                      </button>
-                    </form>
-                    <GrClose
-                      className={styles.icon}
-                      onClick={() => reset({ key: "" })}
+                  </button>
+                </form>
+                <GrClose
+                  className={styles.icon}
+                  onClick={() => reset({ key: "" })}
+                />
+              </div>
+              <div
+                className={styles.actions}
+                onClick={handleActions}
+                style={
+                  actions
+                    ? { background: "var(--blue)", color: "var(--white)" }
+                    : {}
+                }
+              >
+                <p>A</p>
+              </div>
+            </div>
+            <div className={styles.blogs}>
+              {blogs?.length > 0 ? (
+                <Blogs
+                  blogs={blogs}
+                  time={datas?.search_time_ms}
+                  remove={handleDelete}
+                />
+              ) : (
+                <div className={styles.big_logo}>
+                  {loading ? (
+                    <Image
+                      src="/loader.svg"
+                      width="150"
+                      height="150"
+                      alt="loading..."
                     />
-                  </div>
-                  <div className={styles.data}>
-                    <div className={styles.blogs}>
-                      <table className="w-10 text-left text-gray-500 dark:text-gray-400 rounded-lg">
-                        <thead className="text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                          <tr>
-                            {columns.map((col, i) => (
-                              <th
-                                scope="col"
-                                className="py-3 px-6 whitespace-nowrap"
-                                key={i}
-                              >
-                                {col}
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {slice.map((row, i) => (
-                            <tr
-                              className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 whitespace-nowrap"
-                              key={i}
-                            >
-                              {Object.values(row).map((col, j) => (
-                                <td className="py-4 px-6" key={j}>
-                                  {col}
-                                </td>
-                              ))}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    <Paginate
-                      blogsPerPage={rowsPerPage}
-                      len={data?.length}
-                      paginate={handlePaginate}
+                  ) : (
+                    <Image
+                      src="/logo_blue.png"
+                      width="150"
+                      height="150"
+                      alt="logo"
                     />
-                  </div>
+                  )}
                 </div>
-              </>
-            ) : (
-              <Uploader upload={uploadFile} />
-            )}
-          </>
-        )}
+              )}
+            </div>
+          </div>
+          <Actions exportToCsv={handleExport} />
+        </div>
       </div>
-      <Footer />
+      <Footer goHome={goHome} />
     </div>
   );
-};
+}
 
-export default Upload;
+export default withRouter(Home);

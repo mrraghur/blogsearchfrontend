@@ -1,21 +1,12 @@
-import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import React from "react";
 
 import { GoSettings } from "react-icons/go";
 
 import styles from "./filters.module.css";
+import Row from "./row";
 
-const AnonymousFilters = ({ data, filter, height, handleReset }) => {
-  const { register, handleSubmit, reset } = useForm();
-
-  const handleFilter = (title) => (data) => {
-    filter(title, data);
-  };
-
-  const onReset = () => {
-    reset();
-    handleReset();
-  };
+const AnonymousFilters = ({ data, handleFilter, height, handleReset }) => {
+  const onReset = () => {};
 
   return (
     <div className={styles.container}>
@@ -26,35 +17,13 @@ const AnonymousFilters = ({ data, filter, height, handleReset }) => {
         </div>
       </div>
       {Object?.keys(data)?.map((filter, index) => (
-        <div className={styles.audience} key={index}>
-          <div className={styles.title}>
-            <p>{filter.trim()}</p>
-          </div>
-          <form
-            className={styles.list}
-            onSubmit={handleSubmit(handleFilter(filter))}
-          >
-            {Object?.keys(data[filter])
-              .slice(0, 5)
-              .map((item, index) => (
-                <div className={styles.list_item} key={index}>
-                  <div className={styles.item_left}>
-                    <input type="checkbox" {...register(`${item.trim()}`)} />
-                    <p>{item.trim()}</p>
-                  </div>
-                  <div className={styles.item_right}>
-                    <p>{data[filter][item]}</p>
-                  </div>
-                </div>
-              ))}
-            <button type="submit" className={styles.button}>
-              Filter
-            </button>
-          </form>
-          {Object?.keys(data[filter]).length > 5 && (
-            <button className={styles.button}>Show more</button>
-          )}
-        </div>
+        <Row
+          key={index}
+          filter={filter}
+          data={data}
+          handleFilter={handleFilter}
+          handleReset={handleReset}
+        />
       ))}
       <button className={styles.button} onClick={onReset}>
         Clear filters
