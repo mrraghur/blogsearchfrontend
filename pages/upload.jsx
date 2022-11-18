@@ -77,10 +77,21 @@ const Upload = () => {
       });
   };
 
-  const handleFilter = (title, key) => {
-    const index = columns.indexOf(title);
-    const filtered = datas.values.filter((item) => item[index] === key);
-    setData(filtered);
+  const extract = (arr) => {
+    const one = arr.reduce((acc, curr) => {
+      return [...acc, ...curr];
+    }, []);
+    return one;
+  };
+
+  const handleFilter = (arr) => {
+    setData([]);
+    const one = arr.map((element) => {
+      const key = Object.values(element)[0];
+      const index = columns.indexOf(Object.keys(element)[0]);
+      return datas.values.filter((item) => item[index] === key);
+    });
+    setData(extract(one));
   };
 
   const handleReset = () => {

@@ -16,9 +16,10 @@ const Row = ({ filter, data, handleFilter, handleReset }) => {
     const one = Object.keys(data).filter((value) => data[value] === true);
 
     if (one.length > 0) {
-      const two = one[0].split("_");
-      const three = two[1];
-      handleFilter(filter, three);
+      const two = one.map((value) => {
+        return { [filter]: value.split("_")[1] };
+      });
+      handleFilter(two);
     } else {
       handleReset();
     }
