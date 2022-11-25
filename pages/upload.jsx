@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import Head from "next/head";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 
 //icons
@@ -17,6 +18,7 @@ import Uploader from "../components/portals/uploader/uploader";
 
 const Upload = () => {
   //configs
+  const router = useRouter();
   const { handleSubmit, register, reset } = useForm();
 
   //local data
@@ -60,21 +62,32 @@ const Upload = () => {
 
   //getting data
   const uploadFile = async (e) => {
-    setLoading(true);
     const file = e.target.files[0];
-    const data = new FormData();
-    data.append("file", file);
-
-    axios
-      .post("https://backend.interviewblindspots.com/displaycode/upload/", data)
-      .then((res) => {
-        const { filters, columnHeadings, values } = res.data;
+    if (file) {
+      setLoading(true);
+      if (file?.type === "text/csv") {
+        const data = new FormData();
+        data.append("file", file);
+        axios
+          .post(
+            "https://backend.interviewblindspots.com/displaycode/upload/",
+            data
+          )
+          .then((res) => {
+            const { filters, columnHeadings, values } = res.data;
+            setLoading(false);
+            setDatas(res.data);
+            setFilters(filters);
+            setColumns(columnHeadings);
+            setData(values);
+          });
+      } else {
         setLoading(false);
-        setDatas(res.data);
-        setFilters(filters);
-        setColumns(columnHeadings);
-        setData(values);
-      });
+        alert("Please upload a csv file");
+      }
+    } else {
+      alert("Please upload a csv file");
+    }
   };
 
   const extract = (arr) => {
@@ -85,6 +98,25 @@ const Upload = () => {
   };
 
   const handleFilter = (arr) => {
+    console.log(arr);
+
+    //remove previous filters from url
+    const url = window.location.href;
+    const newUrl = url.split("?")[0];
+    window.history.pushState({}, "", newUrl);
+
+    //add filters to url
+    const newUrl2 = `${newUrl}?${arr.join("& ")}`;
+    window.history.pushState({}, "", newUrl2);
+
+    // const params = new URLSearchParams(router.query);
+    // arr.forEach((item) => {
+    //   const key = Object.keys(item)[0];
+    //   const value = Object.values(item)[0];
+    //   params.set(key, value);
+    // });
+    // router.push(`/upload/?${params.toString()}`);
+
     setData([]);
     const one = arr.map((element) => {
       const key = Object.values(element)[0];

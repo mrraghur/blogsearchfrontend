@@ -17,10 +17,20 @@ const Row = ({ filter, data, handleFilter, handleReset }) => {
 
     if (one.length > 0) {
       const two = one.map((value) => {
-        return { [filter]: value.split("_")[1] };
+        return {
+          [filter]: value.split("_")[1],
+          toString: () => {
+            return `${[filter]}=${value.split("_")[1]}`;
+          },
+        };
       });
       handleFilter(two);
     } else {
+      //remove previous filters from url
+      const url = window.location.href;
+      const newUrl = url.split("?")[0];
+      window.history.pushState({}, "", newUrl);
+
       handleReset();
     }
   };
