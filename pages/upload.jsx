@@ -1,7 +1,13 @@
-import axios from "axios";
 import React from "react";
+import axios from "axios";
 import Head from "next/head";
 import Image from "next/image";
+import { useRouter } from "next/router";
+import { useForm } from "react-hook-form";
+
+//icons
+import { FiSearch } from "react-icons/fi";
+import { GrClose } from "react-icons/gr";
 
 import Nav from "../components/nav/nav";
 import styles from "../styles/Upload.module.css";
@@ -11,12 +17,18 @@ import AnonymousFilters from "../components/filters/anonymous";
 import Uploader from "../components/portals/uploader/uploader";
 
 const Upload = () => {
+  //configs
+  const router = useRouter();
+  const { handleSubmit, register, reset } = useForm();
+
+  //local data
   const [page, setPage] = React.useState(1);
   const [filters, setFilters] = React.useState({});
   const [rowsPerPage, setRowsPerPage] = React.useState(0);
   const [data, setData] = React.useState([]);
   const [columns, setColumns] = React.useState([]);
   const [results, setResults] = React.useState({ data: [] });
+  const [datas, setDatas] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [tableRange, setTableRange] = React.useState([]);
   const [slice, setSlice] = React.useState([]);
@@ -50,42 +62,72 @@ const Upload = () => {
 
   //getting data
   const uploadFile = async (e) => {
-    setLoading(true);
-
-    const formData = new FormData();
-    formData.append("file", e.target.files[0]);
-
-    axios
-      .post(
-        "https://search.interviewblindspots.com/displaycode/upload/",
-        formData
-      )
-      .then((res) => {
+    const file = e.target.files[0];
+    if (file) {
+      setLoading(true);
+      if (file?.type === "text/csv") {
+        const data = new FormData();
+        data.append("file", file);
+        axios
+          .post(
+            "https://backend.interviewblindspots.com/displaycode/upload/",
+            data
+          )
+          .then((res) => {
+            const { filters, columnHeadings, values } = res.data;
+            setLoading(false);
+            setDatas(res.data);
+            setFilters(filters);
+            setColumns(columnHeadings);
+            setData(values);
+          });
+      } else {
         setLoading(false);
-        setResults(res.data);
-        setData(res?.data?.values);
-        setFilters(res.data.filters);
-        setColumns(res?.data?.columnHeadings);
-      });
-  };
-
-  const handleFilter = (title, key) => {
-    console.log(title, key);
-    const ky = Object.keys(key).find((k) => key[k] === true);
-    const index = columns.indexOf(title);
-
-    if (ky) {
-      const filtered = results?.values?.filter((item) => {
-        return item[index] === ky;
-      });
-      setData(filtered);
+        alert("Please upload a csv file");
+      }
     } else {
-      setData(results?.values);
+      alert("Please upload a csv file");
     }
   };
 
+  const extract = (arr) => {
+    const one = arr.reduce((acc, curr) => {
+      return [...acc, ...curr];
+    }, []);
+    return one;
+  };
+
+  const handleFilter = (arr) => {
+    console.log(arr);
+
+    //remove previous filters from url
+    const url = window.location.href;
+    const newUrl = url.split("?")[0];
+    window.history.pushState({}, "", newUrl);
+
+    //add filters to url
+    const newUrl2 = `${newUrl}?${arr.join("& ")}`;
+    window.history.pushState({}, "", newUrl2);
+
+    // const params = new URLSearchParams(router.query);
+    // arr.forEach((item) => {
+    //   const key = Object.keys(item)[0];
+    //   const value = Object.values(item)[0];
+    //   params.set(key, value);
+    // });
+    // router.push(`/upload/?${params.toString()}`);
+
+    setData([]);
+    const one = arr.map((element) => {
+      const key = Object.values(element)[0];
+      const index = columns.indexOf(Object.keys(element)[0]);
+      return datas.values.filter((item) => item[index] === key);
+    });
+    setData(extract(one));
+  };
+
   const handleReset = () => {
-    setData(results?.values);
+    setData(datas?.values);
   };
 
   React.useEffect(() => {
@@ -100,10 +142,12 @@ const Upload = () => {
     setRowsPerPage(num);
   }, [results]);
 
+  const handleSearch = (data) => {};
+
   return (
     <div className={styles.container}>
       <Head>
-        <title>Upload</title>
+        <title>Home</title>
       </Head>
       <Nav reset={() => {}} />
       <div className={styles.content}>
@@ -122,46 +166,71 @@ const Upload = () => {
               <>
                 <AnonymousFilters
                   data={filters}
-                  filter={handleFilter}
+                  handleFilter={handleFilter}
                   handleReset={handleReset}
                 />
-                <div className={styles.data}>
-                  <div className={styles.blogs}>
-                    <table className="w-10 text-left text-gray-500 dark:text-gray-400 rounded-lg">
-                      <thead className="text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                        <tr>
-                          {columns.map((col, i) => (
-                            <th
-                              scope="col"
-                              className="py-3 px-6 whitespace-nowrap"
-                              key={i}
-                            >
-                              {col}
-                            </th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {slice.map((row, i) => (
-                          <tr
-                            className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 whitespace-nowrap"
-                            key={i}
-                          >
-                            {Object.values(row).map((col, j) => (
-                              <td className="py-4 px-6" key={j}>
+                <div className={styles.all}>
+                  <div className={styles.search}>
+                    <FiSearch className={styles.icon} />
+                    <form
+                      action="#"
+                      className={styles.form}
+                      onSubmit={handleSubmit(handleSearch)}
+                    >
+                      <input
+                        type="text"
+                        placeholder="Search here..."
+                        className={styles.search_input}
+                        required
+                        {...register("key")}
+                      />
+                      <button type="submit">
+                        <FiSearch className={styles.icon} />
+                      </button>
+                    </form>
+                    <GrClose
+                      className={styles.icon}
+                      onClick={() => reset({ key: "" })}
+                    />
+                  </div>
+                  <div className={styles.data}>
+                    <div className={styles.blogs}>
+                      <table className="w-10 text-left text-gray-500 dark:text-gray-400 rounded-lg">
+                        <thead className="text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                          <tr>
+                            {columns.map((col, i) => (
+                              <th
+                                scope="col"
+                                className="py-3 px-6 whitespace-nowrap"
+                                key={i}
+                              >
                                 {col}
-                              </td>
+                              </th>
                             ))}
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {slice.map((row, i) => (
+                            <tr
+                              className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 whitespace-nowrap"
+                              key={i}
+                            >
+                              {Object.values(row).map((col, j) => (
+                                <td className="py-4 px-6" key={j}>
+                                  {col}
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <Paginate
+                      blogsPerPage={rowsPerPage}
+                      len={data?.length}
+                      paginate={handlePaginate}
+                    />
                   </div>
-                  <Paginate
-                    blogsPerPage={rowsPerPage}
-                    len={data?.length}
-                    paginate={handlePaginate}
-                  />
                 </div>
               </>
             ) : (

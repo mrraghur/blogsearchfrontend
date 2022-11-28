@@ -44,8 +44,8 @@ const Nav = ({ reset }) => {
       </div>
       <div className={styles.tablet_nav}>
         <ul>
-          <li>Home</li>
-          <li>Directory</li>
+          <li onClick={goToHome}>Home</li>
+          <li onClick={goToUpload}>Upload</li>
         </ul>
         <div className={styles.bars} onClick={handleSidebar}>
           <FaBars className={styles.icon} />

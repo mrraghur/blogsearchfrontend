@@ -1,5 +1,5 @@
-import React from "react";
 import Script from "next/script";
+import React, { useEffect } from "react";
 import { CacheProvider } from "@emotion/react";
 import { ThemeProvider } from "@mui/material/styles";
 

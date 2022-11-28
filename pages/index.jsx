@@ -3,7 +3,6 @@ import Image from "next/image";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter, withRouter } from "next/router";
-// import { ExportToCsv } from "export-to-csv-file";
 
 import { GrClose } from "react-icons/gr";
 import { FiSearch } from "react-icons/fi";
@@ -31,7 +30,10 @@ function Home() {
   const { register, handleSubmit, reset } = useForm();
 
   const fetchBlogs = async (data) => {
-    const results = await fetch(`/api/${data?.key}`, {
+    const results = await fetch(`/api/search`, {
+      body: {
+        key: `${data?.key}`,
+      },
       method: "POST",
     }).then((res) => res.json());
 
@@ -56,8 +58,9 @@ function Home() {
 
       await fetchBlogs(data).then((results) => {
         setLoading(false);
-        setBlogs(results?.blogs?.results[0]?.hits);
-        setDatas(results?.blogs?.results[0]);
+        console.log(results);
+        // setBlogs(results?.blogs?.results[0]?.hits);
+        // setDatas(results?.blogs?.results[0]);
       });
     }
   };
