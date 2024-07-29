@@ -1,0 +1,95 @@
+/* /pages/vanavil/[csv]/components/Page.module.css */
+
+.Page {
+  display: flex;
+  height: 100vh; 
+  overflow: hidden; 
+}
+
+.leftColumn {
+  width: 30%;
+  background: #f5f5f5;
+  padding: 20px;
+  overflow-y: auto; 
+}
+
+.rightColumn {
+  width: 70%;
+  padding: 20px;
+  overflow-y: auto; 
+}
+
+.myMasonryGrid {
+  display: flex;
+  margin-left: -30px;
+  width: auto;
+}
+
+.myMasonryGridColumn {
+  padding-left: 30px;
+  background-clip: padding-box;
+}
+
+.card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  padding: 10px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.card img {
+  width: 100%;
+  border-radius: 8px 8px 0 0;
+}
+
+.card h3 {
+  font-size: 1.2em;
+  margin: 10px 0;
+}
+
+.card h4 {
+  font-size: 1em;
+  color: #555;
+}
+
+.card a {
+  color: #007BFF;
+  text-decoration: none;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+}
+
+.pagination li {
+  margin: 0 5px;
+}
+
+.pagination li a {
+  color: #007BFF;
+  text-decoration: none;
+}
+
+.pagination li.active a {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.controls {
+  margin: 20px 0;
+}
+
+.controls label {
+  margin-right: 10px;
+}
+
+.controls input[type="text"] {
+  padding: 5px;
+  font-size: 1em;
+}
