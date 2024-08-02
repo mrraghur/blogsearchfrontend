@@ -1,16 +1,28 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Papa from "papaparse";
 import Card from "./components/Card";
 import Pagination from "./components/Pagination";
 import Masonry from "react-masonry-css";
-import styles from "./components/Page.module.css";
+// import "./components/Page.css";
 import SearchBar from "./components/SearchBar";
+import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import WordCloudComponent from "./components/WordCloudComponent";
+import csvFileMapping from "./components/csvFileMapping.json";
 import { useRouter } from "next/router";
+import styles from "./components/Page.module.css";
+
+const shuffleArray = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+};
 
 const Page = () => {
   const [data, setData] = useState([]);
@@ -18,49 +30,43 @@ const Page = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(50);
   const [searchQuery, setSearchQuery] = useState("");
-  const [pageCount, setPageCount] = useState(0);
-  const [wordCloudData, setWordCloudData] = useState([]);
-  const router = useRouter();
+  var router = useRouter();
   const { csv } = router.query;
 
-  const fetchData = (page = 0, pageSize = itemsPerPage, query = searchQuery) => {
+  useEffect(() => {
     if (!csv) return;
-    fetch(`/api/getCsvData?csv=${csv}&page=${page}&pageSize=${pageSize}&searchQuery=${query}`)
-      .then((response) => response.json())
-      .then((jsonData) => {
-        const { paginatedData, totalItems, wordCloudData } = jsonData;
-        setData(paginatedData);
-        setFilteredData(paginatedData);
-        setPageCount(Math.ceil(totalItems / itemsPerPage));
-        setWordCloudData(wordCloudData);
+    console.log({ csv });
+    fetch(`/data/${csvFileMapping[csv]}`)
+      .then((response) => response.text())
+      .then((text) => {
+        Papa.parse(text, {
+          header: true,
+          dynamicTyping: true,
+          complete: (result) => {
+            const shuffledData = shuffleArray(result.data);
+            setData(shuffledData);
+            setFilteredData(shuffledData);
+          },
+        });
       })
       .catch((error) => {
-        console.error("Error fetching and parsing CSV data:", error);
+        console.error("Error fetching and parsing CSV file:", error);
       });
-  };
+  }, [csv]);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && csv) {
-      fetchData(currentPage);
-    }
-  }, [csv, currentPage, itemsPerPage, searchQuery]);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const value = localStorage.getItem("itemsPerPage") || "";
-      if (value) {
-        setItemsPerPage(parseInt(value));
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("itemsPerPage", itemsPerPage);
-      setCurrentPage(0); // Reset to first page when items per page change
-      fetchData(0, itemsPerPage); // Fetch the new set of data
-    }
-  }, [itemsPerPage]);
+    if (!data) return;
+    const filtered = data.filter(
+      (item) =>
+        item?.image_alt?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
+        String(item?.article_title)
+          ?.toLowerCase()
+          .includes(searchQuery?.toLowerCase()) ||
+        item?.article_url?.toLowerCase().includes(searchQuery?.toLowerCase())
+    );
+    setFilteredData(filtered);
+    setCurrentPage(0); // Reset to first page on new search
+  }, [searchQuery, data]);
 
   const handlePageClick = (event) => {
     setCurrentPage(event.selected);
@@ -72,12 +78,21 @@ const Page = () => {
   };
 
   const handleSearchChange = (event) => {
+    console.log("searching");
+    console.log(event.target.value);
     setSearchQuery(event.target.value);
+  };
+
+  const handleWordCloudWordClick = (word) => {
+    console.log("Word clicked:", word);
+    setSearchQuery(word);
   };
 
   const offset = currentPage * itemsPerPage;
   const currentData = filteredData.slice(offset, offset + itemsPerPage);
+  const pageCount = Math.ceil(filteredData.length / itemsPerPage);
 
+  // Define breakpoints for masonry layout
   const breakpointColumnsObj = {
     default: 4,
     1100: 3,
@@ -85,21 +100,22 @@ const Page = () => {
     500: 1,
   };
 
-  const handleWordClick = (word) => {
-    setSearchQuery(word);
-  };
+  if (!data) return <></>;
 
   return (
-    <div className={styles.Page}>
-      <div className={styles.leftColumn}>
-        <h1>Word Cloud</h1>
+    <div className={styles["Page"]}>
+      <div className={styles["left-column"]}>
+        {/* <h1>Word Cloud</h1> */}
         <SearchBar value={searchQuery} onChange={handleSearchChange} />
-        <WordCloudComponent data={wordCloudData} onWordClick={handleWordClick} />
+        <WordCloudComponent
+          data={filteredData}
+          onWordClick={handleWordCloudWordClick}
+        />
       </div>
-      <div className={styles.rightColumn}>
+      <div className={styles["right-column"]}>
         <h1>Image Gallery</h1>
         <div
-          className={styles.controls}
+          className={styles["controls"]}
           style={{
             display: "flex",
             justifyContent: "center",
@@ -124,8 +140,8 @@ const Page = () => {
         </div>
         <Masonry
           breakpointCols={breakpointColumnsObj}
-          className={styles.myMasonryGrid}
-          columnClassName={styles.myMasonryGridColumn}
+          className={styles["my-masonry-grid"]}
+          columnClassName="my-masonry-grid_column"
         >
           {currentData.map((item, index) => (
             <Card key={index} image={item} />

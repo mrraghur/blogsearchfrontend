@@ -3,7 +3,7 @@
 import React from 'react';
 import Modal from 'react-modal';
 
-Modal.setAppElement('#__next');
+Modal.setAppElement('body');
 
 function getDomainName(url) {
   try {
