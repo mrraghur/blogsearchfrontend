@@ -22,7 +22,7 @@ const filterData = (data, searchQuery) => {
 const generateWordCloudData = (data) => {
   const wordCounts = {};
   data.forEach((item) => {
-    console.log("item", item);
+    // console.log("item", item);
     const words = String(item?.article_title)?.split(" ") || [];
     words.forEach((word) => {
       const lowerWord = word.toLowerCase();

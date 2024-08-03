@@ -2,6 +2,7 @@
 
 import React from 'react';
 import ReactPaginate from 'react-paginate';
+import styles from "./Page.module.css"
 
 const Pagination = ({ pageCount, onPageChange }) => {
   return (
@@ -14,7 +15,7 @@ const Pagination = ({ pageCount, onPageChange }) => {
       marginPagesDisplayed={2}
       pageRangeDisplayed={5}
       onPageChange={onPageChange}
-      containerClassName={'pagination'}
+      containerClassName={styles["pagination"]}
       subContainerClassName={'pages pagination'}
       activeClassName={'active'}
     />

@@ -1,7 +1,8 @@
-// /pages/vanavil/[csv]/components/Card.jsx
+// /src/components/Card.jsx
+
 import React, { useState } from "react";
 import FullScreenModal from "./FullScreenModal";
-import styles from "./Page.module.css"; // Import the CSS module
+import styles from "./Page.module.css";
 
 function getDomainName(url) {
   try {
@@ -25,17 +26,16 @@ const Card = ({ image }) => {
     setModalIsOpen(false);
   };
 
-  // return <></>
-
   return (
     <div>
-      <div className={styles.card}>
+      <div className={styles["card"]}>
         <img
           src={
             image?.image_url?.startsWith("http")
               ? image.image_url
               : `${getDomainName(image.article_url)}${image.image_url}`
           }
+          loading="lazy"
           alt={image.image_alt}
           onClick={openModal}
         />
