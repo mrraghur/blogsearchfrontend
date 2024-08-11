@@ -1,4 +1,5 @@
 {
-  "ncsu": "ncsu_processed_data.csv",
-  "stanford": "stanford_processed_data.csv"
+  "ncsu": { "fileName": "ncsu_processed_data.csv", "totalRows": 36755 },
+  "stanford": { "fileName": "stanford_processed_data.csv", "totalRows": 1774 },
+  "wiki": { "fileName": "wikilinks_processed_data.csv", "totalRows": 5501190 }
 }

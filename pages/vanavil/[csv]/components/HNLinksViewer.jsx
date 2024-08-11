@@ -4,7 +4,6 @@ import moment from "moment";
 import he from "he";
 import cheerio from "cheerio";
 import Masonry from "react-masonry-css";
-import "./HNLinksViewer.css";
 
 // Function to fetch comments from the API with pagination
 const fetchComments = async (query) => {

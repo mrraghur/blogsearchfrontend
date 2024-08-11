@@ -1,75 +1,72 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
-import Papa from "papaparse";
+import axios from "axios";
 import Card from "./components/Card";
 import Pagination from "./components/Pagination";
 import Masonry from "react-masonry-css";
-// import "./components/Page.css";
 import SearchBar from "./components/SearchBar";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 import WordCloudComponent from "./components/WordCloudComponent";
-import csvFileMapping from "./components/csvFileMapping.json";
 import { useRouter } from "next/router";
 import styles from "./components/Page.module.css";
+import ErrorMessage from "./components/ErrorMessage";
 
-const shuffleArray = (array) => {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-};
+function debounce(func, delay) {
+  let timeoutId;
+  return function (...args) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func.apply(this, args), delay);
+  };
+}
 
 const Page = () => {
   const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(50);
+  const [loading, setLoading] = useState(false);
+  const [estimatedTotalRecords, setEstimatedTotalRecords] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  var router = useRouter();
+  const [error, setError] = useState(null);
+  const router = useRouter();
   const { csv } = router.query;
 
   useEffect(() => {
     if (!csv) return;
-    console.log({ csv });
-    fetch(`/data/${csvFileMapping[csv]}`)
-      .then((response) => response.text())
-      .then((text) => {
-        Papa.parse(text, {
-          header: true,
-          dynamicTyping: true,
-          complete: (result) => {
-            const shuffledData = shuffleArray(result.data);
-            setData(shuffledData);
-            setFilteredData(shuffledData);
+
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null); // Reset error state before fetching
+
+        const response = await axios.get("/api/getCsvData", {
+          params: {
+            csv,
+            page: currentPage,
+            itemsPerPage,
+            searchQuery,
           },
         });
-      })
-      .catch((error) => {
-        console.error("Error fetching and parsing CSV file:", error);
-      });
-  }, [csv]);
 
-  useEffect(() => {
-    if (!data) return;
-    const filtered = data.filter(
-      (item) =>
-        item?.image_alt?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
-        String(item?.article_title)
-          ?.toLowerCase()
-          .includes(searchQuery?.toLowerCase()) ||
-        item?.article_url?.toLowerCase().includes(searchQuery?.toLowerCase())
-    );
-    setFilteredData(filtered);
-    setCurrentPage(0); // Reset to first page on new search
-  }, [searchQuery, data]);
+        setEstimatedTotalRecords(response.data.estimatedTotalRecords);
+        setData(response.data.data);
+      } catch (error) {
+        console.error("Error fetching and parsing data from API:", error);
+        setError(error.message); // Set error message
+      } finally {
+        setLoading(false); // Stop loading
+      }
+    };
+
+    fetchData();
+  }, [csv, currentPage, itemsPerPage, searchQuery]);
 
   const handlePageClick = (event) => {
     setCurrentPage(event.selected);
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   const handleItemsPerPageChange = (event) => {
@@ -78,21 +75,20 @@ const Page = () => {
   };
 
   const handleSearchChange = (event) => {
-    console.log("searching");
-    console.log(event.target.value);
-    setSearchQuery(event.target.value);
+    const query = event.target.value;
+    setSearchQuery(query);
+    debouncedSearch(query);
   };
+
+  const debouncedSearch = debounce((query) => {
+    setCurrentPage(0); // Reset to first page
+  }, 1000); // Adjust the delay as needed (e.g., 500ms)
 
   const handleWordCloudWordClick = (word) => {
-    console.log("Word clicked:", word);
     setSearchQuery(word);
+    debouncedSearch(word);
   };
 
-  const offset = currentPage * itemsPerPage;
-  const currentData = filteredData.slice(offset, offset + itemsPerPage);
-  const pageCount = Math.ceil(filteredData.length / itemsPerPage);
-
-  // Define breakpoints for masonry layout
   const breakpointColumnsObj = {
     default: 4,
     1100: 3,
@@ -104,11 +100,11 @@ const Page = () => {
 
   return (
     <div className={styles["Page"]}>
+      {error && <div className={styles["error"]}>{error}</div>}
       <div className={styles["left-column"]}>
-        {/* <h1>Word Cloud</h1> */}
         <SearchBar value={searchQuery} onChange={handleSearchChange} />
         <WordCloudComponent
-          data={filteredData}
+          data={data}
           onWordClick={handleWordCloudWordClick}
         />
       </div>
@@ -123,7 +119,6 @@ const Page = () => {
           }}
         >
           <label htmlFor="itemsPerPage">Items per page:</label>
-
           <FormControl style={{ width: "100px" }}>
             <Select
               labelId="itemsPerPage"
@@ -138,16 +133,25 @@ const Page = () => {
             </Select>
           </FormControl>
         </div>
-        <Masonry
-          breakpointCols={breakpointColumnsObj}
-          className={styles["my-masonry-grid"]}
-          columnClassName="my-masonry-grid_column"
-        >
-          {currentData.map((item, index) => (
-            <Card key={index} image={item} />
-          ))}
-        </Masonry>
-        <Pagination pageCount={pageCount} onPageChange={handlePageClick} />
+        {error && <ErrorMessage message={error} onRetry={fetchData} />}
+        {loading ? (
+          <div>Loading...</div>
+        ) : (
+          <Masonry
+            breakpointCols={breakpointColumnsObj}
+            className={styles["my-masonry-grid"]}
+            columnClassName={styles["my-masonry-grid_column"]}
+          >
+            {data.map((item, index) => (
+              <Card key={index} image={item} />
+            ))}
+          </Masonry>
+        )}
+        <Pagination
+          totalPages={Math.floor(estimatedTotalRecords / itemsPerPage)}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
       </div>
     </div>
   );
