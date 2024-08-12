@@ -1,0 +1,102 @@
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.heading {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.subheading {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.inputField {
+  width: calc(80% - 20px);
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.button, .resetButton {
+  padding: 10px 15px;
+  margin: 5px 0;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.resetButton {
+  background-color: #dc3545;
+}
+
+.button:hover, .resetButton:hover {
+  background-color: #0056b3;
+}
+
+.urlInputContainer {
+  display: flex;
+  align-items: center;
+}
+
+.loading {
+  color: #007bff;
+  margin-top: 10px;
+}
+
+.error {
+  color: #dc3545;
+  margin-top: 10px;
+}
+
+.result {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #e9ecef;
+  border-radius: 5px;
+}
+
+.resultText {
+  font-size: 16px;
+  color: #333;
+  margin: 5px 0;
+}
+
+.dropArea {
+  background-color: rgb(209, 209, 209);
+  margin-top: 20px;
+  padding: 20px;
+  border: 2px dashed #ccc;
+  border-radius: 5px;
+  text-align: center;
+  position: relative;
+  z-index: 20;
+}
+
+.dropArea.dragging {
+  background-color: #e9ecef;
+}
+
+.overlayText {
+  font-size: 16px;
+  color: #777;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
