@@ -1,64 +1,83 @@
 import fs from "fs";
 import path from "path";
-import Papa from "papaparse";
+import csvParser from "csv-parser";
+import csvFileMapping from "../vanavil/[csv]/components/csvFileMapping.json";
 
-const csvFileMapping = {
-  ncsu: "public\\data\\ncsu_processed_data.csv",
-  stanford: "public\\data\\stanford_processed_data.csv",
-};
+export default async function handler(req, res) {
+  var { csv, page = 1, itemsPerPage = 50, searchQuery = "" } = req.query;
+  const { fileName, totalRows } = csvFileMapping[csv];
+  const filePath = path.resolve("./public/data", fileName);
 
-const filterData = (data, searchQuery) => {
-  if (!searchQuery) return data;
-  return data.filter(
-    (item) =>
-      item?.image_alt?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
-      String(item?.article_title)
-        ?.toLowerCase()
-        .includes(searchQuery?.toLowerCase()) ||
-      item?.article_url?.toLowerCase().includes(searchQuery?.toLowerCase())
-  );
-};
+  if (!csvFileMapping[csv]) {
+    return res.status(400).json({ error: "Invalid CSV file" });
+  }
 
-const generateWordCloudData = (data) => {
-  const wordCounts = {};
-  data.forEach((item) => {
-    // console.log("item", item);
-    const words = String(item?.article_title)?.split(" ") || [];
-    words.forEach((word) => {
-      const lowerWord = word.toLowerCase();
-      wordCounts[lowerWord] = (wordCounts[lowerWord] || 0) + 1;
-    });
-  });
-  return Object.entries(wordCounts).map(([text, value]) => ({ text, value }));
-};
+  itemsPerPage = parseInt(itemsPerPage);
+  page = parseInt(page);
 
-export default function handler(req, res) {
-  const { csv, page = 0, pageSize = 50, searchQuery = "" } = req.query;
-  const filePath = path.join(process.cwd(), csvFileMapping[csv]);
+  const results = [];
+  let totalMatchedRecords = 0;
+  const offset = (page - 1) * itemsPerPage;
+  const endOffset = offset + itemsPerPage;
+  let processedRecords = 0;
+  let sentResponse = false;
 
-  fs.readFile(filePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Error reading CSV file:", err);
-      res.status(500).json({ error: "Error reading CSV file" });
-      return;
+  try {
+    const stream = fs
+      .createReadStream(filePath)
+      .pipe(csvParser())
+      .on("data", (row) => {
+        const matchesSearch =
+          searchQuery === "" ||
+          row?.image_alt?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          row?.article_title
+            ?.toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          row?.article_url?.toLowerCase().includes(searchQuery.toLowerCase());
+
+        if (matchesSearch) {
+          totalMatchedRecords++;
+
+          if (
+            totalMatchedRecords > offset &&
+            totalMatchedRecords <= endOffset
+          ) {
+            results.push(row);
+          }
+        }
+
+        processedRecords++;
+        // Send response early if too many records are processed
+        if (totalMatchedRecords >= endOffset && !sentResponse) {
+          res.status(200).json({
+            estimatedTotalRecords: Math.floor(
+              (totalMatchedRecords / processedRecords) * totalRows
+            ),
+            data: results,
+          });
+          sentResponse = true;
+          stream.destroy(); // Stop further processing
+        }
+      })
+      .on("end", () => {
+        if (!sentResponse) {
+          res.status(200).json({
+            totalMatchedRecords,
+            data: results,
+          });
+        }
+      })
+      .on("error", (error) => {
+        console.error("Error reading the CSV file:", error);
+        if (!sentResponse) {
+          res.status(500).json({ error: "Error reading the CSV file" });
+          sentResponse = true;
+        }
+      });
+  } catch (error) {
+    console.error("Error handling the request:", error);
+    if (!sentResponse) {
+      res.status(500).json({ error: "Server error" });
     }
-
-    Papa.parse(data, {
-      header: true,
-      dynamicTyping: true,
-      complete: (result) => {
-        const filteredData = filterData(result.data, searchQuery);
-        const start = page * pageSize;
-        const end = start + parseInt(pageSize);
-        const paginatedData = filteredData.slice(start, end);
-        const totalItems = filteredData.length;
-        const wordCloudData = generateWordCloudData(filteredData);
-        res.status(200).json({ paginatedData, totalItems, wordCloudData });
-      },
-      error: (parseError) => {
-        console.error("Error parsing CSV file:", parseError);
-        res.status(500).json({ error: "Error parsing CSV file" });
-      },
-    });
-  });
+  }
 }

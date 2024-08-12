@@ -9,10 +9,14 @@ const WordCloud = dynamic(() => import("react-wordcloud"), {
 
 const WordCloudComponent = ({ data, onWordClick }) => {
   const [words, setWords] = useState([]);
+  console.log({data});
+  console.log({words});
+  
+  
 
   useEffect(() => {
     if (!data) return;
-    const titles = data.map(item => item.article_title).join(' ');
+    const titles = data.map(item => item.image_alt).join(' ');
     const filteredWords = removeStopwords(titles.split(' '));
     const wordCount = filteredWords.reduce((acc, word) => {
       acc[word] = (acc[word] || 0) + 1;
