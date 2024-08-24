@@ -31,35 +31,35 @@ const Page = () => {
   const router = useRouter();
   const { csv } = router.query;
 
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setError(null); // Reset error state before fetching
+
+      const response = await axios.get("/api/getCsvData", {
+        params: {
+          csv,
+          page: currentPage,
+          itemsPerPage,
+          searchQuery,
+        },
+      });
+
+      setEstimatedTotalRecords(response.data.estimatedTotalRecords);
+      setData(response.data.data);
+    } catch (error) {
+      console.error("Error fetching and parsing data from API:", error);
+      setError(error.message); // Set error message
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
+
   useEffect(() => {
     if (!csv) return;
 
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(null); // Reset error state before fetching
-
-        const response = await axios.get("/api/getCsvData", {
-          params: {
-            csv,
-            page: currentPage,
-            itemsPerPage,
-            searchQuery,
-          },
-        });
-
-        setEstimatedTotalRecords(response.data.estimatedTotalRecords);
-        setData(response.data.data);
-      } catch (error) {
-        console.error("Error fetching and parsing data from API:", error);
-        setError(error.message); // Set error message
-      } finally {
-        setLoading(false); // Stop loading
-      }
-    };
-
     fetchData();
-  }, [csv, currentPage, itemsPerPage, searchQuery]);
+  }, [csv]);
 
   const handlePageClick = (event) => {
     setCurrentPage(event.selected);

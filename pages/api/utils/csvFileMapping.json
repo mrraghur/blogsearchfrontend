@@ -1,0 +1,11 @@
+{
+  "ncsu": {
+    "fileName": "ncsu_processed_data.csv"
+  },
+  "stanford": {
+    "fileName": "stanford_processed_data.csv"
+  },
+  "wiki": {
+    "fileName": "wikilinks_processed_data.csv"
+  }
+}
