@@ -59,7 +59,7 @@ const Page = () => {
     if (!csv) return;
 
     fetchData();
-  }, [csv]);
+  }, [csv, currentPage, itemsPerPage, searchQuery]);
 
   const handlePageClick = (event) => {
     setCurrentPage(event.selected);
