@@ -41,6 +41,7 @@ const Card = ({ image }) => {
         />
         <h3>{image.image_alt}</h3>
         <h4>{image.article_title}</h4>
+        <h5>BW Ratio: {image.bw_ratio || "Unavailable"}</h5>
         <a href={image.article_url} target="_blank" rel="noopener noreferrer">
           Read More
         </a>

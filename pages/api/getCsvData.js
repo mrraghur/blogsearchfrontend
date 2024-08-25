@@ -1,16 +1,22 @@
+// pages/api/getCSVData.js
+
 import fs from "fs";
 import path from "path";
 import csvParser from "csv-parser";
-import csvFileMapping from "../vanavil/[csv]/components/csvFileMapping.json";
+import { updateCSVFileMapping } from "./utils/updateCSVFileMapping";
 
 export default async function handler(req, res) {
   var { csv, page = 1, itemsPerPage = 50, searchQuery = "" } = req.query;
-  const { fileName, totalRows } = csvFileMapping[csv];
-  const filePath = path.resolve("./public/data", fileName);
 
-  if (!csvFileMapping[csv]) {
+  const csvFileMapping = await updateCSVFileMapping();
+  const mapping = csvFileMapping[csv];
+
+  if (!mapping) {
     return res.status(400).json({ error: "Invalid CSV file" });
   }
+
+  const { fileName, totalRows } = mapping;
+  const filePath = path.resolve("./public/data", fileName);
 
   itemsPerPage = parseInt(itemsPerPage);
   page = parseInt(page);
@@ -47,7 +53,6 @@ export default async function handler(req, res) {
         }
 
         processedRecords++;
-        // Send response early if too many records are processed
         if (totalMatchedRecords >= endOffset && !sentResponse) {
           res.status(200).json({
             estimatedTotalRecords: Math.floor(
@@ -56,7 +61,7 @@ export default async function handler(req, res) {
             data: results,
           });
           sentResponse = true;
-          stream.destroy(); // Stop further processing
+          stream.destroy();
         }
       })
       .on("end", () => {
