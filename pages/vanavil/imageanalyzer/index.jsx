@@ -11,6 +11,9 @@ export default function CheckImage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [dragging, setDragging] = useState(false);
+  //const bwDetectorUrl = "http://localhost:3007/check-image";
+  //TODO: Add this to .env file
+  const bwDetectorUrl = "https://dev.interviewblindspots.com/displaycode/check-image/";
 
   const handleURLSubmit = async () => {
     if (!imageURL) return;
@@ -23,7 +26,7 @@ export default function CheckImage() {
 
     try {
       const response = await axios.post(
-        "http://localhost:3007/check-image",
+        bwDetectorUrl,
         formData
       );
       setResult(response.data);
@@ -45,7 +48,7 @@ export default function CheckImage() {
     setError("");
     try {
       const response = await axios.post(
-        "http://localhost:3007/check-image",
+        bwDetectorUrl,
         formData
       );
       setResult(response.data);
@@ -166,7 +169,7 @@ export default function CheckImage() {
             {result.is_black_and_white ? "Yes" : "No"}
           </p>
           <p className={styles.resultText}>
-            <strong>Black-and-White Ratio:</strong> {result.bw_ratio.toFixed(2)}
+            <strong>Black-and-White Ratio:</strong> {result.bwRatio.toFixed(2)}
           </p>
           <p className={styles.resultText}>
             <strong>Used Tolerance:</strong> {result.tolerance}

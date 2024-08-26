@@ -30,10 +30,14 @@ function Home() {
   const { register, handleSubmit, reset } = useForm();
 
   const fetchBlogs = async (data) => {
+    //console.log ("in fetchBlogs. key is " + data?.key);
     const results = await fetch(`/api/search`, {
-      body: {
-        key: `${data?.key}`,
+      headers: {
+             'Content-Type': 'application/json'
       },
+      body: JSON.stringify({
+        key: `${data?.key}`,
+      }),
       method: "POST",
     }).then((res) => res.json());
 
@@ -56,11 +60,12 @@ function Home() {
       params.set("key", data?.key);
       router.push(`/?${params.toString()}`);
 
+      //console.log ("inside handleSearch");
       await fetchBlogs(data).then((results) => {
         setLoading(false);
-        console.log(results);
-        // setBlogs(results?.blogs?.results[0]?.hits);
-        // setDatas(results?.blogs?.results[0]);
+        console.log(results?.blogs?.results[0]);
+        setBlogs(results?.blogs?.results[0]?.hits);
+        setDatas(results?.blogs?.results[0]);
       });
     }
   };
@@ -73,6 +78,7 @@ function Home() {
         const anotherStr = router.asPath.split("?")[1].split("&")[1];
 
         if (keyStr.split("=")[0] == "key") {
+        //console.log ("inside useEffect");
           fetchBlogs({ key: keyStr.split("=")[1] }).then((res) => {
             setDatas(res?.blogs?.results[0]);
             const filter = anotherStr.split("=")[0];
@@ -136,6 +142,7 @@ function Home() {
       } else {
         const keyStr = router.asPath.split("?")[1];
         if (keyStr.split("=")[0] == "key") {
+        //console.log ("inside line 145");
           fetchBlogs({ key: keyStr.split("=")[1] }).then((results) => {
             setLoading(false);
             setBlogs(results?.blogs?.results[0]?.hits);

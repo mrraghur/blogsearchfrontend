@@ -1,11 +1,16 @@
 import axios from "axios";
 import dotenv from "dotenv";
+import curlirize from 'axios-curlirize';
+
+//#const axiosCurlirize = require('axios-curlirize');
 
 dotenv.config();
 
+//https://suhail.hashnode.dev/nodejs-tutorial-how-to-easily-convert-axios-requests-to-curl-commands-with-axios-curlirize-in-nodejs-and-the-browser
+curlirize(axios);
+
 const handler = async (req, res) => {
   const { key } = req.body;
-
   const blogs = await axios.post(`${process.env.BACKEND_API}`, {
     searches: [
       {
@@ -26,6 +31,7 @@ const handler = async (req, res) => {
     ],
   });
 
+  //console.log("search.js data is " + blogs?.data);
   return res.status(200).json({ blogs: blogs?.data });
 };
 
