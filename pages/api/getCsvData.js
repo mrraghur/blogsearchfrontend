@@ -6,7 +6,7 @@ import csvParser from "csv-parser";
 import { updateCSVFileMapping } from "./utils/updateCSVFileMapping";
 
 export default async function handler(req, res) {
-  var { csv, page = 1, itemsPerPage = 50, searchQuery = "" } = req.query;
+  var { csv, page = 1, itemsPerPage = 50, searchQuery = "", filters } = req.query;
 
   const csvFileMapping = await updateCSVFileMapping();
   const mapping = csvFileMapping[csv];
@@ -28,11 +28,15 @@ export default async function handler(req, res) {
   let processedRecords = 0;
   let sentResponse = false;
 
+  // Parse the filters from the query string
+  const parsedFilters = JSON.parse(filters || "{}");
+
   try {
     const stream = fs
       .createReadStream(filePath)
       .pipe(csvParser())
       .on("data", (row) => {
+        // Apply search query filter
         const matchesSearch =
           searchQuery === "" ||
           row?.image_alt?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -41,7 +45,31 @@ export default async function handler(req, res) {
             .includes(searchQuery.toLowerCase()) ||
           row?.article_url?.toLowerCase().includes(searchQuery.toLowerCase());
 
-        if (matchesSearch) {
+        // Apply additional filters based on the parsedFilters object
+        let matchesFilters = true;
+
+        // Filter by image type if the filter is active
+        if (parsedFilters.imageType?.status) {
+          const imageExtension = path.extname(row?.image_url || "").toLowerCase();
+          if (!parsedFilters.imageType.selected.includes(imageExtension)) {
+            matchesFilters = false;
+          }
+        }
+
+        // Filter by Black and White Ratio if the filter is active
+        if (parsedFilters.BWRatio?.status) {
+          const bwRatio = parseFloat(row?.bw_ratio || 0);
+          const targetRatio = parseFloat(parsedFilters.BWRatio.ratio);
+
+          if (parsedFilters.BWRatio.type === "more than") {
+            if (bwRatio <= targetRatio) matchesFilters = false;
+          } else if (parsedFilters.BWRatio.type === "less than") {
+            if (bwRatio >= targetRatio) matchesFilters = false;
+          }
+        }
+
+        // Check if the row matches both the search query and the filters
+        if (matchesSearch && matchesFilters) {
           totalMatchedRecords++;
 
           if (

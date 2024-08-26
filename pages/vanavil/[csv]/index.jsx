@@ -11,6 +11,7 @@ import WordCloudComponent from "./components/WordCloudComponent";
 import { useRouter } from "next/router";
 import styles from "./components/Page.module.css";
 import ErrorMessage from "./components/ErrorMessage";
+import FilterOptions from "./components/FilterOptions";
 
 function debounce(func, delay) {
   let timeoutId;
@@ -28,6 +29,18 @@ const Page = () => {
   const [estimatedTotalRecords, setEstimatedTotalRecords] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState(null);
+  const [filters, setFilters] = useState({
+    imageType: {
+      status: false,
+      options: [".jpeg/.jpg", ".png", ".webp", ".gif", ".svg"],
+      selected: [],
+    },
+    BWRatio: {
+      status: false,
+      type: "more than", //"more than"/"less than",
+      ratio: 0.5,
+    },
+  });
   const router = useRouter();
   const { csv } = router.query;
 
@@ -42,6 +55,7 @@ const Page = () => {
           page: currentPage,
           itemsPerPage,
           searchQuery,
+          filters,
         },
       });
 
@@ -59,7 +73,7 @@ const Page = () => {
     if (!csv) return;
 
     fetchData();
-  }, [csv, currentPage, itemsPerPage, searchQuery]);
+  }, [csv, currentPage, itemsPerPage, searchQuery, filters]);
 
   const handlePageClick = (event) => {
     setCurrentPage(event.selected);
@@ -103,6 +117,7 @@ const Page = () => {
       {error && <div className={styles["error"]}>{error}</div>}
       <div className={styles["left-column"]}>
         <SearchBar value={searchQuery} onChange={handleSearchChange} />
+        <FilterOptions filters={filters} setFilters={setFilters} />
         <WordCloudComponent
           data={data}
           onWordClick={handleWordCloudWordClick}
@@ -146,6 +161,9 @@ const Page = () => {
               <Card key={index} image={item} />
             ))}
           </Masonry>
+        )}
+        {!loading && data.length === 0 && (
+          <div className={styles["no-results"]}>No results found</div>
         )}
         <Pagination
           totalPages={Math.floor(estimatedTotalRecords / itemsPerPage)}

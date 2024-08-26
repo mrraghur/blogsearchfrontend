@@ -26,6 +26,14 @@ const WordCloudComponent = ({ data, onWordClick }) => {
       text: word,
       value: wordCount[word],
     }));
+    // compare wordArray to words
+    // if they are the same, do nothing
+    // else, setWords(wordArray)
+    if (words) {
+      if (JSON.stringify(words) === JSON.stringify(wordArray)) {
+        return;
+      }
+    }
     setWords(wordArray);
   }, [data]);
 
