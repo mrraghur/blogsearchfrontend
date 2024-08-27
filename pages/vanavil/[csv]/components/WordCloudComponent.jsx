@@ -39,13 +39,13 @@ const WordCloudComponent = ({ data, onWordClick }) => {
 
   const options = {
     enableTooltip: true,
-    deterministic: false,
-    fontSizes: [15, 60],
-    rotations: 2,
-    rotationAngles: [-90, 0],
-    scale: 'sqrt',
-    spiral: 'archimedean',
-    transitionDuration: 1000,
+    // deterministic: false,
+    fontSizes: [10, 40],
+    rotations: 1,
+    rotationAngles: [0],
+    // scale: 'sqrt',
+    spiral: 'rectangular',
+    transitionDuration: 500,
   };
 
   const callbacks = {
