@@ -12,6 +12,7 @@ import Nav from "../components/nav/nav";
 import Footer from "../components/footer/footer";
 import Filters from "../components/filters/filters";
 import Actions from "../components/actions/actions";
+import WordCloudComponent from "./vanavil/\[csv\]/components/WordCloudComponent";
 
 import styles from "../styles/Home.module.css";
 import Blogs from "../components/blogs/blogs";
@@ -24,6 +25,7 @@ function Home() {
   const [loading, setLoading] = React.useState(false);
   const [blogs, setBlogs] = React.useState([]);
   const [datas, setDatas] = React.useState([]);
+  const [wordCountData, setWordCountData] = React.useState([]);
   const [filters, setFilters] = React.useState(false);
   const [actions, setActions] = React.useState(false);
 
@@ -54,18 +56,30 @@ function Home() {
     if (!loading) {
       setLoading(true);
       setBlogs([]);
-
       //add category to url
       const params = new URLSearchParams(router.query);
       params.set("key", data?.key);
       router.push(`/?${params.toString()}`);
 
-      //console.log ("inside handleSearch");
+      console.log ("inside handleSearch");
       await fetchBlogs(data).then((results) => {
         setLoading(false);
-        console.log(results?.blogs?.results[0]);
         setBlogs(results?.blogs?.results[0]?.hits);
         setDatas(results?.blogs?.results[0]);
+
+        //Set Word  Cloud data.
+        const currentPosts = results?.blogs?.results[0].hits;
+        let buffer = [];
+        
+        //TODO: We do not need image_alt. Replace with something else in 
+        //WordCloudComponent 
+        currentPosts.forEach((currPost, index) => {
+              var x = {};
+              x['image_alt'] = currPost.document.title;
+              buffer.push(x)
+              console.log (x);
+        });
+        setWordCountData(buffer);
       });
     }
   };
@@ -465,6 +479,9 @@ function Home() {
                 <p>A</p>
               </div>
             </div>
+            <WordCloudComponent
+               data={wordCountData}
+            />
             <div className={styles.blogs}>
               {blogs?.length > 0 ? (
                 <Blogs

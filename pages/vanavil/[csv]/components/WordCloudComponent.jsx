@@ -9,10 +9,8 @@ const WordCloud = dynamic(() => import("react-wordcloud"), {
 
 const WordCloudComponent = ({ data, onWordClick }) => {
   const [words, setWords] = useState([]);
-  console.log({data});
-  console.log({words});
-  
-  
+  //console.log({data});
+  //console.log({words});
 
   useEffect(() => {
     if (!data) return;

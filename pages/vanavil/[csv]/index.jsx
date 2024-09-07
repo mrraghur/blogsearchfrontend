@@ -61,6 +61,7 @@ const Page = () => {
 
       setEstimatedTotalRecords(response.data.estimatedTotalRecords);
       setData(response.data.data);
+      console.log ("raghu data is " + response.data.data);
     } catch (error) {
       console.error("Error fetching and parsing data from API:", error);
       setError(error.message); // Set error message
