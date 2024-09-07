@@ -8,46 +8,9 @@ import styles from "./HNLinksViewer.module.css";
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import { getPostsWithRecentComments } from "./hntree";
 
 // Function to fetch comments from the API with pagination
-const fetchCommentWithId = async (commentId) => {
-  const now = moment.utc();
-  const twentyFourHoursAgo = now.subtract(1, "days").unix();
-
-  const params = {};
-
-  const url = "https://hn.algolia.com/api/v1/items/" + commentId;
-
-  let page = 0;
-  let comments = [];
-  let nbPages = 1;
-  const EMPTY_STRING = "";
-
-  var result = EMPTY_STRING;
-  try {
-    const resultText = await axios
-      .get(url, { params: { ...params, page } })
-      .then((returnVal) => {
-        console.log({returnVal});
-        
-        result = returnVal.data.text;
-        return result;
-      })
-      .catch((err) => {
-        console.log("Axios url=" + url + " err: ", err);
-        result = "Axios url=" + url + " err: " + err;
-        return result;
-      });
-
-    //return resultText;
-  } catch (error) {
-    console.error("Error fetching data", error);
-    result = "Error fetching data " + error;
-  }
-
-  return result;
-};
-
 const fetchComments = async (query) => {
   const now = moment.utc();
   const twentyFourHoursAgo = now.subtract(1, "days").unix();
@@ -84,37 +47,15 @@ const fetchComments = async (query) => {
 
 // Function to fetch all comments with YouTube links
 const getCommentsWithLinks = async () => {
-  const youtubeComments = await fetchComments("youtube.com");
-  const youtuBeComments = await fetchComments("youtu.be");
+  // const trial = await getCommentParentTree({ parent_id: 41471572 });
+  // const trial = await getPostsWithRecentComments("On the efficiency angle, I think a big ");
+  // console.log(trial);
+  // return []
 
-  const comments = youtubeComments.concat(youtuBeComments);
+  const youtubeComments = await getPostsWithRecentComments("youtube.com");
+  const youtuBeComments = await getPostsWithRecentComments("youtu.be");
 
-  {
-    const youtubePattern = /(?:youtube\.com\/watch\?v=|youtu\.be\/)[^\s"']+/;
-    const uniqueLinks = new Set();
-
-    comments.forEach(async (comment) => {
-      console.log("comment parent is " + comment.parent_id);
-      //console.log("comment parent is " + comment.id);
-      const commentText = he.decode(comment.comment_text || "");
-      const $ = cheerio.load(commentText);
-      const parentId = comment.parent_id;
-      const parentComment = await fetchCommentWithId(comment.parent_id);
-      commentText = "raghu " + parentComment + "endraghu" + " " + commentText;
-      console.log("parent text is " + parentComment);
-      console.log("full text is " + commentText);
-
-      // Extract links from href attributes
-      $("a").each((index, element) => {
-        const href = $(element).attr("href");
-        if (href && youtubePattern.test(href)) {
-          uniqueLinks.add({ href, commentText, hnTitle: comment.story_title });
-        }
-      });
-    });
-
-    return Array.from(uniqueLinks);
-  }
+  return youtubeComments.concat(youtuBeComments);
 };
 
 // Function to extract and clean YouTube links from comments
@@ -123,19 +64,19 @@ const extractYouTubeLinks = (comments) => {
   const uniqueLinks = new Set();
 
   comments.forEach((comment) => {
-    console.log("comment parent is " + comment.parent_id);
-    //console.log("comment parent is " + comment.id);
-    const commentText = he.decode(comment.comment_text || "");
+    const commentText = he.decode(comment.actualComment.comment_text || "");
     const $ = cheerio.load(commentText);
-    const parentId = comment.parent_id;
-    const parentComment = ""; //await fetchCommentWithId(comment.parent_id);
-    commentText = commentText + "<parent> " + parentComment + "</parent>";
 
     // Extract links from href attributes
     $("a").each((index, element) => {
       const href = $(element).attr("href");
       if (href && youtubePattern.test(href)) {
-        uniqueLinks.add({ href, commentText, hnTitle: comment.story_title });
+        uniqueLinks.add({
+          href,
+          commentText,
+          hnTitle: comment.actualComment.story_title,
+          commentTree: comment.commentTree,
+        });
       }
     });
   });
@@ -170,11 +111,8 @@ const HNLinksViewer = () => {
 
   useEffect(() => {
     const fetchComments = async () => {
-      //const comments = await getCommentsWithLinks();
-      //const links = extractYouTubeLinks(comments);
-
-      const links = await getCommentsWithLinks();
-
+      const comments = await getCommentsWithLinks();
+      const links = extractYouTubeLinks(comments);
       setYoutubeLinks(links);
 
       // Fetch YouTube video titles incrementally
@@ -198,6 +136,8 @@ const HNLinksViewer = () => {
     700: 1,
   };
 
+  console.log({youtubeLinks});
+
   return (
     <div>
       <h1 className={styles["h1-heading"]}>
@@ -214,7 +154,7 @@ const HNLinksViewer = () => {
           className={styles["my-masonry-grid"]}
           columnClassName={styles["my-masonry-grid_column"]}
         >
-          {youtubeLinks.map(({ href, commentText, hnTitle }, index) => (
+          {youtubeLinks.map(({ href, commentText, hnTitle, commentTree }, index) => (
             <div key={index} className={styles["youtube-block"]}>
               <iframe
                 width="100%"
