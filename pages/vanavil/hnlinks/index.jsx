@@ -8,6 +8,7 @@ import styles from "./HNLinksViewer.module.css";
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import { getPostsWithRecentComments } from "./hntree";
 
 // Function to fetch comments from the API with pagination
 const fetchComments = async (query) => {
@@ -46,8 +47,13 @@ const fetchComments = async (query) => {
 
 // Function to fetch all comments with YouTube links
 const getCommentsWithLinks = async () => {
-  const youtubeComments = await fetchComments("youtube.com");
-  const youtuBeComments = await fetchComments("youtu.be");
+  // const trial = await getCommentParentTree({ parent_id: 41471572 });
+  // const trial = await getPostsWithRecentComments("On the efficiency angle, I think a big ");
+  // console.log(trial);
+  // return []
+
+  const youtubeComments = await getPostsWithRecentComments("youtube.com");
+  const youtuBeComments = await getPostsWithRecentComments("youtu.be");
 
   return youtubeComments.concat(youtuBeComments);
 };
@@ -58,14 +64,19 @@ const extractYouTubeLinks = (comments) => {
   const uniqueLinks = new Set();
 
   comments.forEach((comment) => {
-    const commentText = he.decode(comment.comment_text || "");
+    const commentText = he.decode(comment.actualComment.comment_text || "");
     const $ = cheerio.load(commentText);
 
     // Extract links from href attributes
     $("a").each((index, element) => {
       const href = $(element).attr("href");
       if (href && youtubePattern.test(href)) {
-        uniqueLinks.add({ href, commentText, hnTitle: comment.story_title });
+        uniqueLinks.add({
+          href,
+          commentText,
+          hnTitle: comment.actualComment.story_title,
+          commentTree: comment.commentTree,
+        });
       }
     });
   });
@@ -125,6 +136,8 @@ const HNLinksViewer = () => {
     700: 1,
   };
 
+  console.log({youtubeLinks});
+
   return (
     <div>
       <h1 className={styles["h1-heading"]}>
@@ -141,7 +154,7 @@ const HNLinksViewer = () => {
           className={styles["my-masonry-grid"]}
           columnClassName={styles["my-masonry-grid_column"]}
         >
-          {youtubeLinks.map(({ href, commentText, hnTitle }, index) => (
+          {youtubeLinks.map(({ href, commentText, hnTitle, commentTree }, index) => (
             <div key={index} className={styles["youtube-block"]}>
               <iframe
                 width="100%"
