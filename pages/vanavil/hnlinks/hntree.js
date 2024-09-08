@@ -1,6 +1,21 @@
 import axios from "axios";
 import moment from "moment";
 
+function buildCommentArrayFromTree(obj) {
+  if (!obj) return [];
+  const result = [];
+  const stack = [obj];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    const { child, ...comment } = current; // Destructure the "child" key from current
+    result.push(comment);
+    if (current.child) {
+      stack.push(current.child);
+    }
+  }
+  return result;
+}
+
 // Function to fetch comments from the API in the last 24 hours
 const fetchComments = async (query) => {
   const now = moment.utc();
@@ -73,11 +88,8 @@ const findAndBuildCommentTree = (currentComment, targetCommentId) => {
     for (const child of currentComment.children) {
       const found = findAndBuildCommentTree(child, targetCommentId);
       if (found) {
-        const commentTree = {
-          ...currentComment,
-          children: undefined, // Remove all unnecessary children from the parent
-          child: found,
-        };
+        const { children, ...commentTree } = currentComment; // Remove all unnecessary children from the parent
+        commentTree.child = found;
         return commentTree; // If the target comment is found, return the tree
       }
     }
@@ -106,6 +118,13 @@ export const getPostsWithRecentComments = async (query) => {
         parseInt(comment.objectID)
       );
 
+      const commentTreeArray = buildCommentArrayFromTree(commentTree);
+
+      // removing 1st element as it is the article itself
+      commentTreeArray.shift();
+
+      console.log({ commentTreeArray });
+
       console.log(`Completed building comment tree for ${i}/${total}`);
       i++;
 
@@ -116,6 +135,7 @@ export const getPostsWithRecentComments = async (query) => {
           storyId: story.id,
           commentTree: commentTree,
           actualComment: comment,
+          commentTreeArray: commentTreeArray,
         });
       }
     }
