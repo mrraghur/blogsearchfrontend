@@ -139,7 +139,6 @@ export const getPostsWithRecentComments = async (query) => {
         });
       }
     }
-    return postsWithCommentTrees;
   }
 
   return postsWithCommentTrees;
