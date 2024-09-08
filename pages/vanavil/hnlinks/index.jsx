@@ -10,40 +10,28 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { getPostsWithRecentComments } from "./hntree";
 
-// Function to fetch comments from the API with pagination
-const fetchComments = async (query) => {
-  const now = moment.utc();
-  const twentyFourHoursAgo = now.subtract(1, "days").unix();
-
-  const params = {
-    tags: "comment",
-    numericFilters: `created_at_i>${twentyFourHoursAgo}`,
-    query: query,
-  };
-
-  const url = "https://hn.algolia.com/api/v1/search";
-  let page = 0;
-  let comments = [];
-  let nbPages = 1;
-
-  try {
-    while (page < nbPages) {
-      const response = await axios.get(url, { params: { ...params, page } });
-      if (response.status === 200) {
-        comments = comments.concat(response.data.hits || []);
-        nbPages = response.data.nbPages;
-        page += 1;
-      } else {
-        console.error("Error fetching data", response.status);
-        break;
-      }
-    }
-  } catch (error) {
-    console.error("Error fetching data", error);
-  }
-
-  return comments;
-};
+// color array
+const colors = [
+  "#f4433672",
+  "#e91e6281",
+  "#9b27b07b",
+  "#683ab782",
+  "#3f51b582",
+  "#2195f384",
+  "#03a8f481",
+  "#00bbd48c",
+  "#0096877c",
+  "#4caf4f8e",
+  "#8bc34a7e",
+  "#ccdc397e",
+  "#ffeb3b76",
+  "#ffc10786",
+  "#ff990080",
+  "#ff562287",
+  "#79554877",
+  "#9e9e9e87",
+  "#607d8b86",
+];
 
 // Function to fetch all comments with YouTube links
 const getCommentsWithLinks = async () => {
@@ -76,6 +64,7 @@ const extractYouTubeLinks = (comments) => {
           commentText,
           hnTitle: comment.actualComment.story_title,
           commentTree: comment.commentTree,
+          commentTreeArray: comment.commentTreeArray,
         });
       }
     });
@@ -136,7 +125,7 @@ const HNLinksViewer = () => {
     700: 1,
   };
 
-  console.log({youtubeLinks});
+  console.log({ youtubeLinks });
 
   return (
     <div>
@@ -154,24 +143,48 @@ const HNLinksViewer = () => {
           className={styles["my-masonry-grid"]}
           columnClassName={styles["my-masonry-grid_column"]}
         >
-          {youtubeLinks.map(({ href, commentText, hnTitle, commentTree }, index) => (
-            <div key={index} className={styles["youtube-block"]}>
-              <iframe
-                width="100%"
-                height="200"
-                src={`https://www.youtube.com/embed/${
-                  href.match(/(?:watch\?v=|youtu\.be\/)([^\s"']+)/)[1]
-                }`}
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-              {/* <h3>{videoTitles[href]}</h3> */}
-              <h3>{hnTitle}</h3>
-              <p dangerouslySetInnerHTML={{ __html: commentText }}></p>
-            </div>
-          ))}
+          {youtubeLinks.map(
+            (
+              { href, commentText, hnTitle, commentTree, commentTreeArray },
+              index
+            ) => (
+              <div key={index} className={styles["youtube-block"]}>
+                <iframe
+                  width="100%"
+                  height="200"
+                  src={`https://www.youtube.com/embed/${
+                    href.match(/(?:watch\?v=|youtu\.be\/)([^\s"']+)/)[1]
+                  }`}
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+                {/* <h3>{videoTitles[href]}</h3> */}
+                <h3>{hnTitle}</h3>
+                {/* <p dangerouslySetInnerHTML={{ __html: commentText }}></p> */}
+                {/* Display the commentTreeArray using map with alternating text colors */}
+                <div>
+                  {commentTreeArray.map((comment, index) => (
+                    <>
+                      {/* [{index}] */}
+                      <div
+                        key={index}
+                        style={{
+                          backgroundColor: colors[index % colors.length],
+                          padding: "5px",
+                          borderRadius: "5px",
+                          marginBottom: "5px",
+                        }}
+                        className={styles["comment-tree-node"]}
+                        dangerouslySetInnerHTML={{ __html: comment.text }}
+                      />
+                    </>
+                  ))}
+                </div>
+              </div>
+            )
+          )}
         </Masonry>
       ) : (
         <div className={styles["loader"]}>

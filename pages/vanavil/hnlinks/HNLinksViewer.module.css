@@ -17,7 +17,7 @@
   gap: 20px;
 }
 
-.loader>span{
+.loader > span {
   width: 50%;
 }
 
@@ -78,4 +78,9 @@
   .h1-heading {
     font-size: 2em;
   }
+}
+
+.comment-tree-node,
+.comment-tree-node * {
+  color: black !important;
 }
