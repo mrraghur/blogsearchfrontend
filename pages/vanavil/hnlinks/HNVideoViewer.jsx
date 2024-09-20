@@ -33,19 +33,6 @@ const colors = [
   "#607d8b86",
 ];
 
-// Function to fetch all comments with YouTube links
-const getCommentsWithLinks = async () => {
-  // const trial = await getCommentParentTree({ parent_id: 41471572 });
-  // const trial = await getPostsWithRecentComments("On the efficiency angle, I think a big ");
-  // console.log(trial);
-  // return []
-
-  const youtubeComments = await getPostsWithRecentComments("youtube.com");
-  const youtuBeComments = await getPostsWithRecentComments("youtu.be");
-
-  return youtubeComments.concat(youtuBeComments);
-};
-
 // Function to extract and clean YouTube links from comments
 const extractYouTubeLinks = (comments) => {
   const youtubePattern = /(?:youtube\.com\/watch\?v=|youtu\.be\/)[^\s"']+/;
@@ -101,26 +88,34 @@ const HNVideoViewer = () => {
   const EXPIRY_TIME = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
 
   useEffect(() => {
+    // Create a new Web Worker
+    const hnWorker = new Worker(new URL("./hnLinksWorker.js", import.meta.url));
+
     const fetchComments = async () => {
-      const comments = await getCommentsWithLinks();
-      const links = extractYouTubeLinks(comments);
-      setYoutubeLinks(links);
+      // When the worker sends back the result
+      hnWorker.onmessage = async (e) => {
+        const links = extractYouTubeLinks(e.data);
+        setYoutubeLinks(links);
 
-      // Fetch YouTube video titles incrementally
-      const titles = {};
-      for (let i = 0; i < links.length; i++) {
-        const { href } = links[i];
-        const videoId = href.match(/(?:watch\?v=|youtu\.be\/)([^\s"']+)/)[1];
-        titles[href] = await fetchYouTubeTitle(videoId, apiKey);
+        // Fetch YouTube video titles incrementally
+        const titles = {};
+        for (let i = 0; i < links.length; i++) {
+          const { href } = links[i];
+          const videoId = href.match(/(?:watch\?v=|youtu\.be\/)([^\s"']+)/)[1];
+          titles[href] = await fetchYouTubeTitle(videoId, apiKey);
 
-        setVideoTitles((prevTitles) => ({ ...prevTitles, ...titles }));
-      }
+          setVideoTitles((prevTitles) => ({ ...prevTitles, ...titles }));
+        }
 
-      // Save to local storage with a timestamp
-      const dataToStore = { links, timestamp: Date.now() };
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataToStore));
+        // Save to local storage with a timestamp
+        const dataToStore = { links, timestamp: Date.now() };
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataToStore));
 
-      setDataFetched(true);
+        setDataFetched(true);
+      };
+
+      // Ask the worker to perform the memory-intensive task
+      hnWorker.postMessage("fetchLinks");
     };
 
     const loadDataFromLocalStorage = () => {
@@ -142,6 +137,11 @@ const HNVideoViewer = () => {
 
     // Fetch fresh data in the background
     fetchComments();
+
+    return () => {
+      // Terminate the worker when the component unmounts
+      hnWorker.terminate();
+    };
   }, []);
 
   const breakpointColumnsObj = {
