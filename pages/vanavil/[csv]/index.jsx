@@ -49,7 +49,7 @@ const Page = () => {
       setLoading(true);
       setError(null); // Reset error state before fetching
 
-      const response = await axios.get("/api/getCsvData", {
+      const response = await axios.get("/api/getDbData", {
         params: {
           csv,
           page: currentPage,
@@ -59,7 +59,7 @@ const Page = () => {
         },
       });
 
-      setEstimatedTotalRecords(response.data.estimatedTotalRecords);
+      setEstimatedTotalRecords(response.data.totalMatchedRecords);
       setData(response.data.data);
       console.log ("raghu data is " + response.data.data);
     } catch (error) {
