@@ -5,7 +5,7 @@ import path from "path";
 const dbPath = process.env.DB_PATH;
 
 export default async function handler(req, res) {
-  let { page = 1, itemsPerPage = 50, searchQuery = "", filters } = req.query;
+  let { tableName, page = 1, itemsPerPage = 50, searchQuery = "", filters } = req.query;
 
   // Parse the filters from the query string
   const parsedFilters = JSON.parse(filters || "{}");
@@ -21,7 +21,7 @@ export default async function handler(req, res) {
 
     // Base query
     let query = `
-      SELECT * FROM ncsu
+      SELECT * FROM ${tableName}
       WHERE (image_alt LIKE ? OR article_title LIKE ? OR article_url LIKE ?)
     `;
     const queryParams = [`%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`];
@@ -52,7 +52,7 @@ export default async function handler(req, res) {
 
     // Count total matched records (for pagination)
     const totalStmt = db.prepare(`
-      SELECT COUNT(*) as count FROM ncsu
+      SELECT COUNT(*) as count FROM ${tableName}
       WHERE (image_alt LIKE ? OR article_title LIKE ? OR article_url LIKE ?)
     `);
     const totalRecords = totalStmt.get(`%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`).count;
