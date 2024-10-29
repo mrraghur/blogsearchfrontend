@@ -51,6 +51,7 @@ const Page = () => {
 
       const response = await axios.get("/api/getDbData", {
         params: {
+          tableName:csv,
           csv,
           page: currentPage,
           itemsPerPage,
