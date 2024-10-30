@@ -43,6 +43,16 @@ export default async function handler(req, res) {
       queryParams.push(targetRatio);
     }
 
+    // Apply logo filter based on logoFilter value
+    if (parsedFilters.logoFilter) {
+      if (parsedFilters.logoFilter === "with_logo") {
+        query += " AND is_logo_bool = 1"; // Only include rows with logo
+      } else if (parsedFilters.logoFilter === "without_logo") {
+        query += " AND is_logo_bool = 0"; // Only include rows without logo
+      }
+      // No condition added for "both" since it should return all rows
+    }
+
     query += ` LIMIT ? OFFSET ?`;
     queryParams.push(itemsPerPage, offset);
 

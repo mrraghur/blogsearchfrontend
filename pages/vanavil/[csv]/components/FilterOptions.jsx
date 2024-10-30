@@ -8,6 +8,7 @@ const FilterOptions = ({ filters, setFilters }) => {
     <div className={styles.container}>
       <h2 className={styles.heading}>Filter Options</h2>
 
+      {/* Image Type Filter */}
       <div>
         <h3 className={styles.subHeading}>Image Type</h3>
         <div className={styles.listItem}>
@@ -73,6 +74,7 @@ const FilterOptions = ({ filters, setFilters }) => {
         )}
       </div>
 
+      {/* Black and White Ratio Filter */}
       <div>
         <h3 className={styles.subHeading}>Black and White Ratio</h3>
         <div className={styles.listItem}>
@@ -131,6 +133,25 @@ const FilterOptions = ({ filters, setFilters }) => {
             />
           </div>
         )}
+      </div>
+
+      {/* Logo Filter */}
+      <div>
+        <h3 className={styles.subHeading}>Logo Filter</h3>
+        <select
+          className={styles.select}
+          value={filters.logoFilter}
+          onChange={(e) => {
+            setFilters({
+              ...filters,
+              logoFilter: e.target.value
+            });
+          }}
+        >
+          <option value="both">Both</option>
+          <option value="with_logo">With Logo</option>
+          <option value="without_logo">Without Logo</option>
+        </select>
       </div>
     </div>
   );
