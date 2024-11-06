@@ -153,6 +153,50 @@ const FilterOptions = ({ filters, setFilters }) => {
           <option value="without_logo">Without Logo</option>
         </select>
       </div>
+
+      {/* Human Detection Filter */}
+      <div>
+        <h3 className={styles.subHeading}>Human Detection</h3>
+        <div className={styles.listItem}>
+          <input
+            type="checkbox"
+            id="humanDetection"
+            name="humanDetection"
+            value="humanDetection"
+            checked={filters.humanDetection.status}
+            onChange={(e) => {
+              setFilters({
+                ...filters,
+                humanDetection: {
+                  ...filters.humanDetection,
+                  status: e.target.checked
+                }
+              });
+            }}
+          />
+          <label htmlFor="humanDetection" className={styles.label}>
+            Number of Humans
+          </label>
+        </div>
+
+        {filters.humanDetection.status && (
+          <input
+            type="text"
+            className={styles.input}
+            value={filters.humanDetection.number || ""}
+            onChange={(e) => {
+              setFilters({
+                ...filters,
+                humanDetection: {
+                  ...filters.humanDetection,
+                  number: e.target.value
+                }
+              });
+            }}
+            placeholder="Enter number of humans"
+          />
+        )}
+      </div>
     </div>
   );
 };

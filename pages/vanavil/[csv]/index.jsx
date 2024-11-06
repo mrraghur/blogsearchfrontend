@@ -40,6 +40,8 @@ const Page = () => {
       type: "more than", //"more than"/"less than",
       ratio: 0.5,
     },
+    logoFilter: "both",
+    humanDetection: { status: false, number: "" },
   });
   const router = useRouter();
   const { csv } = router.query;
@@ -51,7 +53,7 @@ const Page = () => {
 
       const response = await axios.get("/api/getDbData", {
         params: {
-          tableName:csv,
+          tableName: csv,
           csv,
           page: currentPage,
           itemsPerPage,
@@ -62,7 +64,7 @@ const Page = () => {
 
       setEstimatedTotalRecords(response.data.totalMatchedRecords);
       setData(response.data.data);
-      console.log ("raghu data is " + response.data.data);
+      console.log("raghu data is " + response.data.data);
     } catch (error) {
       console.error("Error fetching and parsing data from API:", error);
       setError(error.message); // Set error message
