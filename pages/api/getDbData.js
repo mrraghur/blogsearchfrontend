@@ -53,6 +53,15 @@ export default async function handler(req, res) {
       // No condition added for "both" since it should return all rows
     }
 
+    // Add filter for human_detected
+    if (parsedFilters.humanDetection?.status) {
+      const humanCount = parseInt(parsedFilters.humanDetection.count);
+      if (!isNaN(humanCount)) {
+        query += " AND CAST(human_detected AS INTEGER) = ?";
+        queryParams.push(humanCount);
+      }
+    }
+
     query += ` LIMIT ? OFFSET ?`;
     queryParams.push(itemsPerPage, offset);
 
