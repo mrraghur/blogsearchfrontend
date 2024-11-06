@@ -181,7 +181,7 @@ const FilterOptions = ({ filters, setFilters }) => {
 
         {filters.humanDetection.status && (
           <input
-            type="number"
+            type="text"
             className={styles.input}
             value={filters.humanDetection.number || ""}
             onChange={(e) => {

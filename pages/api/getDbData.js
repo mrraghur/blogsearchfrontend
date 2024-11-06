@@ -5,7 +5,15 @@ import path from "path";
 const dbPath = process.env.DB_PATH;
 
 export default async function handler(req, res) {
-  let { tableName, page = 1, itemsPerPage = 50, searchQuery = "", filters } = req.query;
+  let {
+    tableName,
+    page = 1,
+    itemsPerPage = 50,
+    searchQuery = "",
+    filters,
+  } = req.query;
+
+  console.log(filters);
 
   // Parse the filters from the query string
   const parsedFilters = JSON.parse(filters || "{}");
@@ -24,12 +32,20 @@ export default async function handler(req, res) {
       SELECT * FROM ${tableName}
       WHERE (image_alt LIKE ? OR article_title LIKE ? OR article_url LIKE ?)
     `;
-    const queryParams = [`%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`];
+    const queryParams = [
+      `%${searchQuery}%`,
+      `%${searchQuery}%`,
+      `%${searchQuery}%`,
+    ];
 
     // Add filters based on parsedFilters object
     if (parsedFilters.imageType?.status) {
-      const imageTypes = parsedFilters.imageType.selected.map(ext => `%${ext}`);
-      query += ` AND (${imageTypes.map(() => "image_url LIKE ?").join(" OR ")})`;
+      const imageTypes = parsedFilters.imageType.selected.map(
+        (ext) => `%${ext}`
+      );
+      query += ` AND (${imageTypes
+        .map(() => "image_url LIKE ?")
+        .join(" OR ")})`;
       queryParams.push(...imageTypes);
     }
 
@@ -55,11 +71,9 @@ export default async function handler(req, res) {
 
     // Add filter for human_detected
     if (parsedFilters.humanDetection?.status) {
-      const humanCount = parseInt(parsedFilters.humanDetection.count);
-      if (!isNaN(humanCount)) {
-        query += " AND CAST(human_detected AS INTEGER) = ?";
-        queryParams.push(humanCount);
-      }
+      const humanCount = parsedFilters.humanDetection.number;
+      query += " AND human_detected LIKE ?";
+      queryParams.push(humanCount);
     }
 
     query += ` LIMIT ? OFFSET ?`;
@@ -74,7 +88,11 @@ export default async function handler(req, res) {
       SELECT COUNT(*) as count FROM ${tableName}
       WHERE (image_alt LIKE ? OR article_title LIKE ? OR article_url LIKE ?)
     `);
-    const totalRecords = totalStmt.get(`%${searchQuery}%`, `%${searchQuery}%`, `%${searchQuery}%`).count;
+    const totalRecords = totalStmt.get(
+      `%${searchQuery}%`,
+      `%${searchQuery}%`,
+      `%${searchQuery}%`
+    ).count;
 
     res.status(200).json({
       totalMatchedRecords: totalRecords,
