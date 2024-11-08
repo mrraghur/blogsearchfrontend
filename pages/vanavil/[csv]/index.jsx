@@ -1,3 +1,4 @@
+//src/index.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Card from "./components/Card";
@@ -23,28 +24,22 @@ function debounce(func, delay) {
 
 const Page = () => {
   const [data, setData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(50);
   const [loading, setLoading] = useState(false);
   const [estimatedTotalRecords, setEstimatedTotalRecords] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
-    imageType: {
-      status: false,
-      options: [".jpeg/.jpg", ".png", ".webp", ".gif", ".svg"],
-      selected: [],
-    },
-    BWRatio: {
-      status: false,
-      type: "more than", //"more than"/"less than",
-      ratio: 0.5,
-    },
+    imageType: { status: false, options: [".jpeg/.jpg", ".png", ".webp", ".gif", ".svg"], selected: [] },
+    BWRatio: { status: false, type: "more than", ratio: 0.5 },
     logoFilter: "both",
     humanDetection: { status: false, number: "" },
   });
   const router = useRouter();
-  const { csv } = router.query;
+  const { csv, page } = router.query;
+
+  // Update the current page based on the URL
+  const currentPage = page ? parseInt(page) : 1;
 
   const fetchData = async () => {
     try {
@@ -52,19 +47,11 @@ const Page = () => {
       setError(null); // Reset error state before fetching
 
       const response = await axios.get("/api/getDbData", {
-        params: {
-          tableName: csv,
-          csv,
-          page: currentPage,
-          itemsPerPage,
-          searchQuery,
-          filters,
-        },
+        params: { tableName: csv, csv, page: currentPage, itemsPerPage, searchQuery, filters },
       });
 
       setEstimatedTotalRecords(response.data.totalMatchedRecords);
       setData(response.data.data);
-      console.log("raghu data is " + response.data.data);
     } catch (error) {
       console.error("Error fetching and parsing data from API:", error);
       setError(error.message); // Set error message
@@ -75,21 +62,17 @@ const Page = () => {
 
   useEffect(() => {
     if (!csv) return;
-
     fetchData();
   }, [csv, currentPage, itemsPerPage, searchQuery, filters]);
 
-  const handlePageClick = (event) => {
-    setCurrentPage(event.selected);
-  };
-
+  // Update page in URL instead of using state
   const handlePageChange = (page) => {
-    setCurrentPage(page);
+    router.push({ pathname: router.pathname, query: { ...router.query, page } });
   };
 
   const handleItemsPerPageChange = (event) => {
     setItemsPerPage(parseInt(event.target.value));
-    setCurrentPage(0); // Reset to first page
+    handlePageChange(1); // Reset to first page
   };
 
   const handleSearchChange = (event) => {
@@ -99,8 +82,8 @@ const Page = () => {
   };
 
   const debouncedSearch = debounce((query) => {
-    setCurrentPage(0); // Reset to first page
-  }, 1000); // Adjust the delay as needed (e.g., 500ms)
+    handlePageChange(1); // Reset to first page
+  }, 1000);
 
   const handleWordCloudWordClick = (word) => {
     setSearchQuery(word);
@@ -122,21 +105,11 @@ const Page = () => {
       <div className={styles["left-column"]}>
         <SearchBar value={searchQuery} onChange={handleSearchChange} />
         <FilterOptions filters={filters} setFilters={setFilters} />
-        <WordCloudComponent
-          data={data}
-          onWordClick={handleWordCloudWordClick}
-        />
+        <WordCloudComponent data={data} onWordClick={handleWordCloudWordClick} />
       </div>
       <div className={styles["right-column"]}>
         <h1>Image Gallery</h1>
-        <div
-          className={styles["controls"]}
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        <div className={styles["controls"]} style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
           <label htmlFor="itemsPerPage">Items per page:</label>
           <FormControl style={{ width: "100px" }}>
             <Select
@@ -156,23 +129,15 @@ const Page = () => {
         {loading ? (
           <div>Loading...</div>
         ) : (
-          <Masonry
-            breakpointCols={breakpointColumnsObj}
-            className={styles["my-masonry-grid"]}
-            columnClassName={styles["my-masonry-grid_column"]}
-          >
-            {data.map((item, index) => (
-              <Card key={index} image={item} />
-            ))}
+          <Masonry breakpointCols={breakpointColumnsObj} className={styles["my-masonry-grid"]} columnClassName={styles["my-masonry-grid_column"]}>
+            {data.map((item, index) => <Card key={index} image={item} />)}
           </Masonry>
         )}
-        {!loading && data.length === 0 && (
-          <div className={styles["no-results"]}>No results found</div>
-        )}
+        {!loading && data.length === 0 && <div className={styles["no-results"]}>No results found</div>}
         <Pagination
           totalPages={Math.floor(estimatedTotalRecords / itemsPerPage)}
           currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
+          setCurrentPage={handlePageChange}
         />
       </div>
     </div>
